@@ -1,0 +1,169 @@
+<UserControl x:Class="VehicleMeterSimulator.Views.Controls.CircularTachometer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="560"
+             d:DesignWidth="560"
+             Width="560"
+             Height="560"
+             Background="Transparent">
+    <UserControl.Resources>
+        <Style x:Key="TachNumberStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#E9EEF2" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Width="560" Height="560">
+        <Canvas Width="560" Height="560">
+            <Ellipse Canvas.Left="20"
+                     Canvas.Top="20"
+                     Width="520"
+                     Height="520"
+                     Fill="#05070A"
+                     Stroke="#32383D"
+                     StrokeThickness="10" />
+
+            <Ellipse Canvas.Left="42"
+                     Canvas.Top="42"
+                     Width="476"
+                     Height="476"
+                     Fill="#080B10"
+                     Stroke="#66808F"
+                     StrokeThickness="2"
+                     Opacity="0.65" />
+
+            <Ellipse Canvas.Left="72"
+                     Canvas.Top="72"
+                     Width="416"
+                     Height="416"
+                     Fill="#020304"
+                     Stroke="#1B252D"
+                     StrokeThickness="1" />
+
+            <Path x:Name="RedZoneArc"
+                  Stroke="#8D1818"
+                  StrokeThickness="18"
+                  StrokeStartLineCap="Round"
+                  StrokeEndLineCap="Round"
+                  Opacity="0.65"
+                  Data="M 474,392 A 224,224 0 0 1 392,474" />
+
+            <Line X1="166" Y1="478" X2="179" Y2="455" Stroke="#DDE8EF" StrokeThickness="3" />
+            <Line X1="83" Y1="394" X2="105" Y2="381" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="52" Y1="280" X2="78" Y2="280" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="83" Y1="166" X2="105" Y2="179" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="166" Y1="83" X2="179" Y2="105" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="280" Y1="52" X2="280" Y2="78" Stroke="#DDE8EF" StrokeThickness="3" />
+            <Line X1="394" Y1="83" X2="381" Y2="105" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="478" Y1="166" X2="455" Y2="179" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="508" Y1="280" X2="482" Y2="280" Stroke="#DDE8EF" StrokeThickness="2" />
+            <Line X1="478" Y1="394" X2="455" Y2="381" Stroke="#FF6868" StrokeThickness="2" />
+            <Line X1="394" Y1="478" X2="381" Y2="455" Stroke="#FF4E4E" StrokeThickness="3" />
+
+            <TextBlock Canvas.Left="160" Canvas.Top="451" Text="0" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="82" Canvas.Top="373" Text="1" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="54" Canvas.Top="265" Text="2" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="82" Canvas.Top="158" Text="3" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="161" Canvas.Top="79" Text="4" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="269" Canvas.Top="51" Text="5" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="376" Canvas.Top="79" Text="6" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="455" Canvas.Top="158" Text="7" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="484" Canvas.Top="265" Text="8" Style="{StaticResource TachNumberStyle}" />
+            <TextBlock Canvas.Left="455" Canvas.Top="373" Text="9" Foreground="#FF6868" FontSize="24" FontWeight="SemiBold" />
+            <TextBlock Canvas.Left="370" Canvas.Top="451" Text="10" Foreground="#FF4E4E" FontSize="24" FontWeight="SemiBold" />
+
+            <TextBlock Canvas.Left="220"
+                       Canvas.Top="414"
+                       Width="120"
+                       Text="x1000 r/min"
+                       Foreground="#9CA9B2"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center" />
+
+            <Line x:Name="NeedleLine"
+                  X1="280"
+                  Y1="280"
+                  X2="280"
+                  Y2="88"
+                  Stroke="#EAF8FF"
+                  StrokeThickness="5"
+                  StrokeStartLineCap="Round"
+                  StrokeEndLineCap="Triangle">
+                <Line.RenderTransform>
+                    <RotateTransform x:Name="NeedleRotateTransform"
+                                     CenterX="280"
+                                     CenterY="280"
+                                     Angle="-150" />
+                </Line.RenderTransform>
+            </Line>
+
+            <Ellipse Canvas.Left="264"
+                     Canvas.Top="264"
+                     Width="32"
+                     Height="32"
+                     Fill="#DCECF5"
+                     Stroke="#52636D"
+                     StrokeThickness="3" />
+        </Canvas>
+
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Margin="0,26,0,0">
+            <TextBlock x:Name="SpeedValueText"
+                       Text="0"
+                       Foreground="#F7FAFC"
+                       FontSize="72"
+                       FontWeight="Light"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock Text="km/h"
+                       Foreground="#AAB8C2"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock Text="ASG"
+                       Foreground="#5F7684"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,18,0,0"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock x:Name="GearValueText"
+                       Text="N"
+                       Foreground="#FFFFFF"
+                       FontSize="68"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock x:Name="RpmDigitalText"
+                       Text="RPM: 0"
+                       Foreground="#AAB8C2"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,6,0,0"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock x:Name="SelfCheckText"
+                       Text="SELF CHECK"
+                       Foreground="#FF5C5C"
+                       FontSize="17"
+                       FontWeight="SemiBold"
+                       Margin="0,10,0,0"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Visibility="Collapsed" />
+        </StackPanel>
+    </Grid>
+</UserControl>

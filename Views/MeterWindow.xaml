@@ -1,0 +1,194 @@
+<Window x:Class="VehicleMeterSimulator.Views.MeterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:VehicleMeterSimulator.Views.Controls"
+        mc:Ignorable="d"
+        Title="Meter Display"
+        Height="860"
+        Width="1300"
+        MinHeight="780"
+        MinWidth="1100"
+        Background="#030305"
+        Focusable="True"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed"
+        Deactivated="Window_Deactivated"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        PreviewKeyUp="Window_PreviewKeyUp"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="ControlHintStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#A6A6A1" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="StatusLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#8F8F8A" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#030305">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0"
+                   Margin="42,30,42,10">
+            <Button Content="Back to Vehicle Selection"
+                    DockPanel.Dock="Right"
+                    Width="210"
+                    Height="38"
+                    Background="#141417"
+                    Foreground="#E6E6E3"
+                    BorderBrush="#38383C"
+                    Click="BackButton_Click" />
+
+            <TextBlock x:Name="VehicleNameTextBlock"
+                       Foreground="#F2F2EF"
+                       FontSize="30"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center" />
+        </DockPanel>
+
+        <Grid Grid.Row="1"
+              Margin="40,8,40,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Margin="0,40,26,40"
+                    Padding="22"
+                    Background="#08080B"
+                    BorderBrush="#242428"
+                    BorderThickness="1">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="POWERTRAIN" Style="{StaticResource StatusLabelStyle}" />
+
+                    <Border x:Name="IgnitionStatusBorder"
+                            Margin="0,18,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <TextBlock x:Name="IgnitionStatusText"
+                                   Text="Ignition: OFF"
+                                   Foreground="#8F8F8A"
+                                   FontSize="21"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+
+                    <Border x:Name="EngineStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <TextBlock x:Name="EngineStatusText"
+                                   Text="Engine: OFF"
+                                   Foreground="#8F8F8A"
+                                   FontSize="21"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Column="1"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <controls:IndicatorPanel x:Name="MainIndicatorPanel"
+                                         Grid.Row="0"
+                                         Margin="0,0,0,8" />
+
+                <controls:CircularTachometer x:Name="MainTachometer"
+                                             Grid.Row="1" />
+            </Grid>
+
+            <Border Grid.Column="2"
+                    Margin="26,40,0,40"
+                    Padding="22"
+                    Background="#08080B"
+                    BorderBrush="#242428"
+                    BorderThickness="1">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="INPUTS" Style="{StaticResource StatusLabelStyle}" />
+
+                    <Border x:Name="ThrottleStatusBorder"
+                            Margin="0,18,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <TextBlock x:Name="ThrottleText"
+                                   Text="Throttle: 0%"
+                                   Foreground="#BDBDB8"
+                                   FontSize="21"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+
+                    <Border x:Name="BrakeStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <TextBlock x:Name="BrakeText"
+                                   Text="Brake: 0%"
+                                   Foreground="#BDBDB8"
+                                   FontSize="21"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+
+                    <Border Margin="0,30,0,0"
+                            Padding="18"
+                            Background="#050507"
+                            BorderBrush="#1A1A1E"
+                            BorderThickness="1">
+                        <TextBlock x:Name="SystemMessageText"
+                                   Text="Press I to switch ignition on"
+                                   Foreground="#A8A8A3"
+                                   FontSize="16"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                BorderBrush="#17171A"
+                BorderThickness="0,1,0,0"
+                Padding="24,20">
+            <UniformGrid Columns="6"
+                         MaxWidth="1120"
+                         HorizontalAlignment="Center">
+                <TextBlock Text="I : Ignition ON / OFF" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="S : Engine Start / Stop" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="A : Accelerator" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="Z : Brake" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="&#x2191; : Shift Up" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="&#x2193; : Shift Down" Style="{StaticResource ControlHintStyle}" />
+            </UniformGrid>
+        </Border>
+    </Grid>
+</Window>
