@@ -56,6 +56,13 @@
                        FontSize="30"
                        FontWeight="SemiBold"
                        VerticalAlignment="Center" />
+
+            <TextBlock x:Name="TransmissionTextBlock"
+                       Margin="18,8,0,0"
+                       Foreground="#8F9BA3"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center" />
         </DockPanel>
 
         <Grid Grid.Row="1"
@@ -101,6 +108,48 @@
                                    FontSize="21"
                                    FontWeight="SemiBold"
                                    HorizontalAlignment="Center" />
+                    </Border>
+
+                    <Border x:Name="DriveModeStatusBorder"
+                            Margin="0,22,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <StackPanel>
+                            <TextBlock Text="SIMULATION MODE"
+                                       Foreground="#777772"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock x:Name="DriveModeText"
+                                       Text="NORMAL"
+                                       Foreground="#E6E6E3"
+                                       FontSize="24"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="TransmissionModeStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <StackPanel>
+                            <TextBlock Text="SIMULATION TRANSMISSION"
+                                       Foreground="#777772"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock x:Name="TransmissionModeText"
+                                       Text="MANUAL"
+                                       Foreground="#E6E6E3"
+                                       FontSize="23"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
                     </Border>
                 </StackPanel>
             </Border>
@@ -158,6 +207,55 @@
                                    HorizontalAlignment="Center" />
                     </Border>
 
+                    <Border x:Name="ParkingBrakeStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <TextBlock x:Name="ParkingBrakeStatusText"
+                                   Text="Parking Brake: ON"
+                                   Foreground="#BDBDB8"
+                                   FontSize="19"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+
+                    <Border x:Name="AudioStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <TextBlock x:Name="AudioStatusText"
+                                   Text="Audio: No Files"
+                                   Foreground="#8F8F8A"
+                                   FontSize="19"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+
+                    <Border x:Name="EngineAudioStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <StackPanel>
+                            <TextBlock Text="ENGINE SOUND"
+                                       Foreground="#777772"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock x:Name="EngineAudioStatusText"
+                                       Text="NO LOOP FILE"
+                                       Foreground="#8F8F8A"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
                     <Border Margin="0,30,0,0"
                             Padding="18"
                             Background="#050507"
@@ -179,15 +277,20 @@
                 BorderBrush="#17171A"
                 BorderThickness="0,1,0,0"
                 Padding="24,20">
-            <UniformGrid Columns="6"
-                         MaxWidth="1120"
+            <UniformGrid Columns="11"
+                         MaxWidth="1320"
                          HorizontalAlignment="Center">
                 <TextBlock Text="I : Ignition ON / OFF" Style="{StaticResource ControlHintStyle}" />
                 <TextBlock Text="S : Engine Start / Stop" Style="{StaticResource ControlHintStyle}" />
                 <TextBlock Text="A : Accelerator" Style="{StaticResource ControlHintStyle}" />
                 <TextBlock Text="Z : Brake" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="&#x2191; : Shift Up" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="&#x2193; : Shift Down" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="&#x2191; : Shift Up / Drive" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="&#x2193; : Shift Down / Neutral" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="R : Reverse Gear" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="P : Parking Brake" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="D : Drive Mode" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="T : Transmission Mode" Style="{StaticResource ControlHintStyle}" />
+                <TextBlock Text="M : Mute Audio" Style="{StaticResource ControlHintStyle}" />
             </UniformGrid>
         </Border>
     </Grid>

@@ -19,8 +19,9 @@
     </UserControl.Resources>
 
     <Grid Width="560" Height="560">
-        <Canvas Width="560" Height="560">
-            <Ellipse Canvas.Left="20"
+        <Canvas x:Name="GaugeCanvas" Width="560" Height="560">
+            <Ellipse x:Name="OuterRingEllipse"
+                     Canvas.Left="20"
                      Canvas.Top="20"
                      Width="520"
                      Height="520"
@@ -28,7 +29,8 @@
                      Stroke="#32383D"
                      StrokeThickness="10" />
 
-            <Ellipse Canvas.Left="42"
+            <Ellipse x:Name="InnerGlowEllipse"
+                     Canvas.Left="42"
                      Canvas.Top="42"
                      Width="476"
                      Height="476"
@@ -53,29 +55,30 @@
                   Opacity="0.65"
                   Data="M 474,392 A 224,224 0 0 1 392,474" />
 
-            <Line X1="166" Y1="478" X2="179" Y2="455" Stroke="#DDE8EF" StrokeThickness="3" />
-            <Line X1="83" Y1="394" X2="105" Y2="381" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="52" Y1="280" X2="78" Y2="280" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="83" Y1="166" X2="105" Y2="179" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="166" Y1="83" X2="179" Y2="105" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="280" Y1="52" X2="280" Y2="78" Stroke="#DDE8EF" StrokeThickness="3" />
-            <Line X1="394" Y1="83" X2="381" Y2="105" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="478" Y1="166" X2="455" Y2="179" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="508" Y1="280" X2="482" Y2="280" Stroke="#DDE8EF" StrokeThickness="2" />
-            <Line X1="478" Y1="394" X2="455" Y2="381" Stroke="#FF6868" StrokeThickness="2" />
-            <Line X1="394" Y1="478" X2="381" Y2="455" Stroke="#FF4E4E" StrokeThickness="3" />
+            <Canvas x:Name="TachTickCanvas" Width="560" Height="560" />
+            <Canvas x:Name="TachNumberCanvas" Width="560" Height="560" />
 
-            <TextBlock Canvas.Left="160" Canvas.Top="451" Text="0" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="82" Canvas.Top="373" Text="1" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="54" Canvas.Top="265" Text="2" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="82" Canvas.Top="158" Text="3" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="161" Canvas.Top="79" Text="4" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="269" Canvas.Top="51" Text="5" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="376" Canvas.Top="79" Text="6" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="455" Canvas.Top="158" Text="7" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="484" Canvas.Top="265" Text="8" Style="{StaticResource TachNumberStyle}" />
-            <TextBlock Canvas.Left="455" Canvas.Top="373" Text="9" Foreground="#FF6868" FontSize="24" FontWeight="SemiBold" />
-            <TextBlock Canvas.Left="370" Canvas.Top="451" Text="10" Foreground="#FF4E4E" FontSize="24" FontWeight="SemiBold" />
+            <TextBlock x:Name="GaugeVehicleNameText"
+                       Canvas.Left="130"
+                       Canvas.Top="115"
+                       Width="300"
+                       Text=""
+                       Foreground="#BFD7E6"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center"
+                       Visibility="Collapsed" />
+
+            <TextBlock x:Name="GaugeStyleText"
+                       Canvas.Left="190"
+                       Canvas.Top="135"
+                       Width="180"
+                       Text=""
+                       Foreground="#86BBD8"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center"
+                       Visibility="Collapsed" />
 
             <TextBlock Canvas.Left="220"
                        Canvas.Top="414"
@@ -130,7 +133,8 @@
                        TextAlignment="Center"
                        HorizontalAlignment="Center" />
 
-            <TextBlock Text="ASG"
+            <TextBlock x:Name="MeterModeText"
+                       Text="ASG"
                        Foreground="#5F7684"
                        FontSize="13"
                        FontWeight="SemiBold"

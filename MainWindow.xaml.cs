@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using VehicleMeterSimulator.Models;
+using VehicleMeterSimulator.Services;
 using VehicleMeterSimulator.Views;
 
 namespace VehicleMeterSimulator;
@@ -14,9 +16,17 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        vehicles = VehicleProfile.CreateDefaultVehicles();
+        vehicles = LoadVehicles();
         VehicleComboBox.ItemsSource = vehicles;
-        VehicleComboBox.SelectedIndex = 0;
+
+        if (vehicles.Count > 0)
+        {
+            VehicleComboBox.SelectedItem = vehicles.FirstOrDefault(vehicle => vehicle.Id == "lexus-lfa") ?? vehicles[0];
+        }
+        else
+        {
+            OpenMeterButton.IsEnabled = false;
+        }
     }
 
     private void VehicleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -56,6 +66,7 @@ public partial class MainWindow : Window
             TorqueTextBlock.Text = "";
             TransmissionTextBlock.Text = "";
             DriveTypeTextBlock.Text = "";
+            ForwardGearsTextBlock.Text = "";
             return;
         }
 
@@ -64,5 +75,23 @@ public partial class MainWindow : Window
         TorqueTextBlock.Text = vehicle.TorqueDisplay;
         TransmissionTextBlock.Text = vehicle.Transmission;
         DriveTypeTextBlock.Text = vehicle.DriveType;
+        ForwardGearsTextBlock.Text = vehicle.ForwardGearCount.ToString();
+    }
+
+    private static List<VehicleProfile> LoadVehicles()
+    {
+        try
+        {
+            return new VehicleRepository().LoadVehicles();
+        }
+        catch (System.Exception ex)
+        {
+            MessageBox.Show(
+                $"Vehicle data could not be loaded.{System.Environment.NewLine}{System.Environment.NewLine}{ex.Message}",
+                "Vehicle Data Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            return [];
+        }
     }
 }

@@ -73,7 +73,8 @@
                               DisplayMemberPath="Name"
                               SelectionChanged="VehicleComboBox_SelectionChanged" />
 
-                    <Button Content="Open Meter Display"
+                    <Button x:Name="OpenMeterButton"
+                            Content="Open Meter Display"
                             Margin="0,36,0,0"
                             Height="44"
                             Background="#8E1717"
@@ -121,6 +122,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Engine" Style="{StaticResource SpecLabelStyle}" />
@@ -137,6 +139,9 @@
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Drive Type" Style="{StaticResource SpecLabelStyle}" />
                         <TextBlock Grid.Row="4" Grid.Column="1" x:Name="DriveTypeTextBlock" Style="{StaticResource SpecValueStyle}" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Forward Gears" Style="{StaticResource SpecLabelStyle}" />
+                        <TextBlock Grid.Row="5" Grid.Column="1" x:Name="ForwardGearsTextBlock" Style="{StaticResource SpecValueStyle}" />
                     </Grid>
                 </Grid>
             </Border>
@@ -146,7 +151,7 @@
                 BorderBrush="#211010"
                 BorderThickness="0,1,0,0"
                 Padding="24,16">
-            <TextBlock Text="Initial Vehicle: Lexus LFA"
+            <TextBlock Text="Vehicle data loaded from Data/Vehicles JSON files"
                        Foreground="#8F8F8B"
                        FontSize="14"
                        HorizontalAlignment="Center" />

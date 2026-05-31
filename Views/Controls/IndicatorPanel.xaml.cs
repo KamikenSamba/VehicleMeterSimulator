@@ -25,6 +25,7 @@ public partial class IndicatorPanel : UserControl
         bool isIgnitionOn,
         bool isEngineRunning,
         bool isSelfCheckActive,
+        bool isParkingBrakeApplied,
         bool shouldShowShiftUp)
     {
         if (!isIgnitionOn)
@@ -45,11 +46,15 @@ public partial class IndicatorPanel : UserControl
             SetWarningIndicator(AbsIndicatorBorder, AbsIndicatorText, false, IndicatorColor.Amber);
             SetWarningIndicator(OilIndicatorBorder, OilIndicatorText, true, IndicatorColor.Red);
             SetWarningIndicator(BatteryIndicatorBorder, BatteryIndicatorText, true, IndicatorColor.Red);
-            SetWarningIndicator(BrakeIndicatorBorder, BrakeIndicatorText, false, IndicatorColor.Red);
+            SetWarningIndicator(BrakeIndicatorBorder, BrakeIndicatorText, isParkingBrakeApplied, IndicatorColor.Red);
         }
         else
         {
-            SetAllWarningIndicatorsOff();
+            SetWarningIndicator(CheckIndicatorBorder, CheckIndicatorText, false, IndicatorColor.Amber);
+            SetWarningIndicator(AbsIndicatorBorder, AbsIndicatorText, false, IndicatorColor.Amber);
+            SetWarningIndicator(OilIndicatorBorder, OilIndicatorText, false, IndicatorColor.Red);
+            SetWarningIndicator(BatteryIndicatorBorder, BatteryIndicatorText, false, IndicatorColor.Red);
+            SetWarningIndicator(BrakeIndicatorBorder, BrakeIndicatorText, isParkingBrakeApplied, IndicatorColor.Red);
         }
 
         SetWarningIndicator(ShiftUpIndicatorBorder, ShiftUpIndicatorText, shouldShowShiftUp, IndicatorColor.Red);

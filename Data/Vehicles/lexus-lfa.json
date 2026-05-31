@@ -1,0 +1,90 @@
+{
+  "id": "lexus-lfa",
+  "manufacturer": "Lexus",
+  "name": "Lexus LFA",
+  "meterStyleId": "lfa-inspired",
+  "engineDescription": "4.8L V10",
+  "maxPowerPs": 560,
+  "maxPowerRpm": 8700,
+  "maxTorqueNm": 480,
+  "maxTorqueRpm": 7000,
+  "transmission": "6-speed ASG",
+  "driveType": "FR",
+  "maxRpm": 10000,
+  "idleRpm": 1000,
+  "revLimiterRpm": 9000,
+  "shiftUpIndicatorRpm": 8000,
+  "forwardGearCount": 6,
+  "defaultTransmissionModeId": "manual",
+  "supportedTransmissionModeIds": [
+    "manual",
+    "automatic"
+  ],
+  "defaultDrivingModeId": "normal",
+  "drivingModes": [
+    {
+      "id": "normal",
+      "displayName": "NORMAL",
+      "accelerationMultiplier": 1.0,
+      "coastDecelerationMultiplier": 1.0,
+      "shiftUpIndicatorRpm": 8000,
+      "automaticUpshiftRpm": 7600,
+      "automaticDownshiftRpm": 2300,
+      "automaticShiftCooldownMilliseconds": 500,
+      "accentStyleId": "standard"
+    },
+    {
+      "id": "sport",
+      "displayName": "SPORT",
+      "accelerationMultiplier": 1.15,
+      "coastDecelerationMultiplier": 1.25,
+      "shiftUpIndicatorRpm": 8500,
+      "automaticUpshiftRpm": 8500,
+      "automaticDownshiftRpm": 3200,
+      "automaticShiftCooldownMilliseconds": 450,
+      "accentStyleId": "sport"
+    }
+  ],
+  "maxSimulationSpeedKmh": 325.0,
+  "rpmPerKmhByGear": [
+    0.0,
+    130.0,
+    82.0,
+    60.0,
+    45.0,
+    35.0,
+    27.0
+  ],
+  "accelerationKmhPerSecondByGear": [
+    0.0,
+    26.0,
+    20.0,
+    15.0,
+    11.0,
+    8.0,
+    6.0
+  ],
+  "brakeDecelerationKmhPerSecond": 55.0,
+  "coastDecelerationKmhPerSecond": 3.0,
+  "maxReverseSpeedKmh": 50.0,
+  "reverseRpmPerKmh": 120.0,
+  "reverseAccelerationKmhPerSecond": 12.0,
+  "audioProfile": {
+    "ignitionOnSound": "LexusLfa/ignition-on.wav",
+    "ignitionOffSound": "LexusLfa/ignition-off.wav",
+    "engineStartSound": "LexusLfa/engine-start.wav",
+    "engineStopSound": "LexusLfa/engine-stop.wav",
+    "shiftUpSound": "LexusLfa/shift-up.wav",
+    "shiftDownSound": "LexusLfa/shift-down.wav",
+    "reverseEngageSound": "LexusLfa/reverse-engage.wav",
+    "reverseDisengageSound": "LexusLfa/reverse-disengage.wav",
+    "parkingBrakeAppliedSound": "LexusLfa/parking-brake-applied.wav",
+    "parkingBrakeReleasedSound": "LexusLfa/parking-brake-released.wav",
+    "engineLoopSound": "LexusLfa/engine-loop.wav",
+    "engineLoopReferenceRpm": 1000,
+    "engineLoopMinPitchFactor": 0.75,
+    "engineLoopMaxPitchFactor": 1.80,
+    "engineLoopBaseVolume": 0.35,
+    "engineLoopThrottleVolume": 0.80
+  }
+}

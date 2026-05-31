@@ -4,7 +4,13 @@ namespace VehicleMeterSimulator.Models;
 
 public class VehicleProfile
 {
+    public required string Id { get; init; }
+
+    public required string Manufacturer { get; init; }
+
     public required string Name { get; init; }
+
+    public required string MeterStyleId { get; init; }
 
     public required string EngineDescription { get; init; }
 
@@ -26,7 +32,17 @@ public class VehicleProfile
 
     public int RevLimiterRpm { get; init; }
 
+    public int ShiftUpIndicatorRpm { get; init; }
+
     public int ForwardGearCount { get; init; }
+
+    public required string DefaultDrivingModeId { get; init; }
+
+    public required IReadOnlyList<DrivingModeProfile> DrivingModes { get; init; }
+
+    public required string DefaultTransmissionModeId { get; init; }
+
+    public required IReadOnlyList<string> SupportedTransmissionModeIds { get; init; }
 
     public double MaxSimulationSpeedKmh { get; init; }
 
@@ -38,34 +54,15 @@ public class VehicleProfile
 
     public double CoastDecelerationKmhPerSecond { get; init; }
 
-    public string PowerDisplay => $"{MaxPowerPs} PS @ {MaxPowerRpm:N0} rpm";
+    public double MaxReverseSpeedKmh { get; init; }
 
-    public string TorqueDisplay => $"{MaxTorqueNm} N\u00B7m @ {MaxTorqueRpm:N0} rpm";
+    public double ReverseRpmPerKmh { get; init; }
 
-    public static List<VehicleProfile> CreateDefaultVehicles()
-    {
-        return
-        [
-            new VehicleProfile
-            {
-                Name = "Lexus LFA",
-                EngineDescription = "4.8L V10",
-                MaxPowerPs = 560,
-                MaxPowerRpm = 8700,
-                MaxTorqueNm = 480,
-                MaxTorqueRpm = 7000,
-                Transmission = "6-speed ASG",
-                DriveType = "FR",
-                MaxRpm = 10000,
-                IdleRpm = 1000,
-                RevLimiterRpm = 9000,
-                ForwardGearCount = 6,
-                MaxSimulationSpeedKmh = 325.0,
-                RpmPerKmhByGear = [0.0, 130.0, 82.0, 60.0, 45.0, 35.0, 27.0],
-                AccelerationKmhPerSecondByGear = [0.0, 26.0, 20.0, 15.0, 11.0, 8.0, 6.0],
-                BrakeDecelerationKmhPerSecond = 55.0,
-                CoastDecelerationKmhPerSecond = 3.0
-            }
-        ];
-    }
+    public double ReverseAccelerationKmhPerSecond { get; init; }
+
+    public VehicleAudioProfile? AudioProfile { get; init; }
+
+    public string PowerDisplay => $"{MaxPowerPs} PS / {MaxPowerRpm:N0} rpm";
+
+    public string TorqueDisplay => $"{MaxTorqueNm} N\u00B7m / {MaxTorqueRpm:N0} rpm";
 }

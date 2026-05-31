@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using VehicleMeterSimulator.Models;
+using VehicleMeterSimulator.Services;
 
 namespace VehicleMeterSimulator.Views;
 
@@ -24,10 +25,17 @@ public partial class MeterWindow : Window
     private static readonly Brush ActiveTextBrush = new SolidColorBrush(Color.FromRgb(220, 54, 54));
     private static readonly Brush ActiveMessageBrush = new SolidColorBrush(Color.FromRgb(220, 160, 160));
     private static readonly Brush ActiveBorderBrush = new SolidColorBrush(Color.FromRgb(160, 35, 35));
+    private static readonly Brush SportModeTextBrush = new SolidColorBrush(Color.FromRgb(255, 166, 76));
+    private static readonly Brush SportModeBorderBrush = new SolidColorBrush(Color.FromRgb(202, 92, 35));
+    private static readonly Brush AutoModeTextBrush = new SolidColorBrush(Color.FromRgb(138, 210, 240));
+    private static readonly Brush AutoModeBorderBrush = new SolidColorBrush(Color.FromRgb(62, 139, 174));
     private static readonly Brush ThrottleInactiveBrush = new SolidColorBrush(Color.FromRgb(189, 189, 184));
 
     private readonly VehicleProfile vehicle;
     private readonly VehicleRuntimeState runtimeState;
+    private readonly AudioService audioService;
+    private readonly EngineAudioService engineAudioService;
+    private readonly bool hasAvailableAudio;
     private readonly DispatcherTimer updateTimer;
     private StartupSweepPhase startupSweepPhase = StartupSweepPhase.None;
     private double startupSweepElapsedMilliseconds = 0.0;
@@ -40,6 +48,12 @@ public partial class MeterWindow : Window
 
         this.vehicle = vehicle;
         runtimeState = new VehicleRuntimeState();
+        runtimeState.InitializeDrivingMode(this.vehicle);
+        runtimeState.InitializeTransmissionMode(this.vehicle);
+        audioService = new AudioService();
+        engineAudioService = new EngineAudioService();
+        engineAudioService.Initialize(this.vehicle.AudioProfile);
+        hasAvailableAudio = audioService.HasAvailableSound(this.vehicle.AudioProfile);
         updateTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(50)
@@ -48,6 +62,12 @@ public partial class MeterWindow : Window
 
         Title = $"{this.vehicle.Name} - Meter Display";
         VehicleNameTextBlock.Text = this.vehicle.Name;
+        TransmissionTextBlock.Text = this.vehicle.Transmission;
+        MainTachometer.ConfigureStyle(
+            this.vehicle.MeterStyleId,
+            this.vehicle.Name,
+            this.vehicle.MaxRpm,
+            this.vehicle.RevLimiterRpm);
         UpdateRuntimeDisplay();
         updateTimer.Start();
     }
@@ -62,6 +82,7 @@ public partial class MeterWindow : Window
         runtimeState.SetAcceleratorPressed(false);
         runtimeState.SetBrakePressed(false);
         StopUpdateTimer();
+        engineAudioService.Dispose();
     }
 
     private void Window_Deactivated(object? sender, EventArgs e)
@@ -73,12 +94,30 @@ public partial class MeterWindow : Window
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.M)
+        {
+            if (!e.IsRepeat)
+            {
+                audioService.ToggleMute();
+                engineAudioService.UpdateEngineSound(
+                    runtimeState.IsEngineRunning,
+                    runtimeState.CurrentRpm,
+                    runtimeState.ThrottlePercent,
+                    audioService.IsMuted);
+                UpdateRuntimeDisplay();
+            }
+
+            e.Handled = true;
+            return;
+        }
+
         if (e.Key == Key.I)
         {
             if (IsStartupSweepActive)
             {
                 CancelStartupSweep();
                 runtimeState.ToggleIgnition();
+                PlayVehicleSound(vehicle.AudioProfile?.IgnitionOffSound);
                 UpdateRuntimeDisplay();
                 e.Handled = true;
                 return;
@@ -89,6 +128,11 @@ public partial class MeterWindow : Window
             if (!wasIgnitionOn && runtimeState.IsIgnitionOn)
             {
                 StartStartupSweep();
+                PlayVehicleSound(vehicle.AudioProfile?.IgnitionOnSound);
+            }
+            else if (wasIgnitionOn && !runtimeState.IsIgnitionOn)
+            {
+                PlayVehicleSound(vehicle.AudioProfile?.IgnitionOffSound);
             }
 
             UpdateRuntimeDisplay();
@@ -104,9 +148,43 @@ public partial class MeterWindow : Window
             return;
         }
 
+        if (e.Key == Key.D)
+        {
+            if (!e.IsRepeat)
+            {
+                runtimeState.TryCycleDrivingMode(vehicle);
+                UpdateRuntimeDisplay();
+            }
+
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.T)
+        {
+            if (!e.IsRepeat)
+            {
+                runtimeState.TryCycleTransmissionMode(vehicle);
+                UpdateRuntimeDisplay();
+            }
+
+            e.Handled = true;
+            return;
+        }
+
         if (e.Key == Key.S)
         {
+            var wasEngineRunning = runtimeState.IsEngineRunning;
             runtimeState.ToggleEngine();
+            if (!wasEngineRunning && runtimeState.IsEngineRunning)
+            {
+                PlayVehicleSound(vehicle.AudioProfile?.EngineStartSound);
+            }
+            else if (wasEngineRunning && !runtimeState.IsEngineRunning && runtimeState.IsIgnitionOn)
+            {
+                PlayVehicleSound(vehicle.AudioProfile?.EngineStopSound);
+            }
+
             UpdateRuntimeDisplay();
             e.Handled = true;
             return;
@@ -140,7 +218,14 @@ public partial class MeterWindow : Window
         {
             if (!e.IsRepeat)
             {
+                var previousGearNumber = runtimeState.CurrentGearNumber;
                 runtimeState.TryShiftUp(vehicle);
+                if (runtimeState.CurrentGearNumber > previousGearNumber
+                    && !(runtimeState.IsAutomaticTransmission && previousGearNumber == 0))
+                {
+                    PlayVehicleSound(vehicle.AudioProfile?.ShiftUpSound);
+                }
+
                 UpdateRuntimeDisplay();
             }
 
@@ -152,7 +237,58 @@ public partial class MeterWindow : Window
         {
             if (!e.IsRepeat)
             {
+                var previousGearNumber = runtimeState.CurrentGearNumber;
                 runtimeState.TryShiftDown(vehicle);
+                if (runtimeState.CurrentGearNumber < previousGearNumber
+                    && !(runtimeState.IsAutomaticTransmission && runtimeState.CurrentGearNumber == 0))
+                {
+                    PlayVehicleSound(vehicle.AudioProfile?.ShiftDownSound);
+                }
+
+                UpdateRuntimeDisplay();
+            }
+
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.R)
+        {
+            if (!e.IsRepeat)
+            {
+                var previousGearNumber = runtimeState.CurrentGearNumber;
+                runtimeState.TryToggleReverse();
+                if (previousGearNumber == 0 && runtimeState.CurrentGearNumber == -1)
+                {
+                    PlayVehicleSound(vehicle.AudioProfile?.ReverseEngageSound);
+                }
+                else if (previousGearNumber == -1 && runtimeState.CurrentGearNumber == 0)
+                {
+                    PlayVehicleSound(vehicle.AudioProfile?.ReverseDisengageSound);
+                }
+
+                UpdateRuntimeDisplay();
+            }
+
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.P)
+        {
+            if (!e.IsRepeat)
+            {
+                var wasParkingBrakeApplied = runtimeState.IsParkingBrakeApplied;
+                runtimeState.TryToggleParkingBrake();
+                if (!wasParkingBrakeApplied && runtimeState.IsParkingBrakeApplied)
+                {
+                    PlayVehicleSound(vehicle.AudioProfile?.ParkingBrakeAppliedSound);
+                }
+                else if (wasParkingBrakeApplied && !runtimeState.IsParkingBrakeApplied)
+                {
+                    PlayVehicleSound(vehicle.AudioProfile?.ParkingBrakeReleasedSound);
+                }
+
                 UpdateRuntimeDisplay();
             }
 
@@ -189,11 +325,33 @@ public partial class MeterWindow : Window
         if (IsStartupSweepActive)
         {
             UpdateStartupSweep(updateTimer.Interval.TotalMilliseconds);
+            engineAudioService.UpdateEngineSound(
+                false,
+                runtimeState.CurrentRpm,
+                runtimeState.ThrottlePercent,
+                audioService.IsMuted);
             UpdateRuntimeDisplay();
             return;
         }
 
         runtimeState.UpdateSimulation(vehicle, updateTimer.Interval.TotalSeconds);
+        var automaticShiftResult = runtimeState.UpdateAutomaticTransmission(
+            vehicle,
+            updateTimer.Interval.TotalMilliseconds);
+        if (automaticShiftResult == AutomaticShiftResult.ShiftUp)
+        {
+            PlayVehicleSound(vehicle.AudioProfile?.ShiftUpSound);
+        }
+        else if (automaticShiftResult == AutomaticShiftResult.ShiftDown)
+        {
+            PlayVehicleSound(vehicle.AudioProfile?.ShiftDownSound);
+        }
+
+        engineAudioService.UpdateEngineSound(
+            runtimeState.IsEngineRunning,
+            runtimeState.CurrentRpm,
+            runtimeState.ThrottlePercent,
+            audioService.IsMuted);
         UpdateRuntimeDisplay();
     }
 
@@ -202,6 +360,7 @@ public partial class MeterWindow : Window
         runtimeState.SetAcceleratorPressed(false);
         runtimeState.SetBrakePressed(false);
         StopUpdateTimer();
+        engineAudioService.Dispose();
 
         var mainWindow = new MainWindow();
         Application.Current.MainWindow = mainWindow;
@@ -269,6 +428,8 @@ public partial class MeterWindow : Window
 
     private void UpdateRuntimeDisplay()
     {
+        var currentDrivingMode = runtimeState.GetCurrentDrivingMode(vehicle);
+
         MainTachometer.UpdateGauge(
             runtimeState.CurrentRpm,
             IsStartupSweepActive ? displayedNeedleRpm : runtimeState.CurrentRpm,
@@ -277,15 +438,22 @@ public partial class MeterWindow : Window
             vehicle.MaxRpm,
             vehicle.RevLimiterRpm,
             IsStartupSweepActive);
+        MainTachometer.ApplyDrivingModeAccent(currentDrivingMode.AccentStyleId);
 
         MainIndicatorPanel.UpdateIndicators(
             runtimeState.IsIgnitionOn,
             runtimeState.IsEngineRunning,
             IsStartupSweepActive,
+            runtimeState.IsParkingBrakeApplied,
             ShouldShowShiftUpIndicator());
 
         ThrottleText.Text = $"Throttle: {runtimeState.ThrottlePercent}%";
         BrakeText.Text = $"Brake: {runtimeState.BrakePercent}%";
+        ParkingBrakeStatusText.Text = $"Parking Brake: {(runtimeState.IsParkingBrakeApplied ? "ON" : "OFF")}";
+        DriveModeText.Text = currentDrivingMode.DisplayName;
+        TransmissionModeText.Text = runtimeState.GetTransmissionModeDisplayName();
+        UpdateAudioStatusDisplay();
+        UpdateEngineAudioStatusDisplay();
         SystemMessageText.Text = sweepStatusMessage ?? runtimeState.SystemMessage;
 
         if (runtimeState.IsIgnitionOn)
@@ -337,6 +505,98 @@ public partial class MeterWindow : Window
             BrakeText.Foreground = ThrottleInactiveBrush;
             BrakeStatusBorder.BorderBrush = InactiveBorderBrush;
         }
+
+        if (runtimeState.IsParkingBrakeApplied)
+        {
+            ParkingBrakeStatusText.Foreground = ActiveTextBrush;
+            ParkingBrakeStatusBorder.BorderBrush = ActiveBorderBrush;
+        }
+        else
+        {
+            ParkingBrakeStatusText.Foreground = ThrottleInactiveBrush;
+            ParkingBrakeStatusBorder.BorderBrush = InactiveBorderBrush;
+        }
+
+        if (string.Equals(currentDrivingMode.AccentStyleId, "sport", StringComparison.OrdinalIgnoreCase))
+        {
+            DriveModeText.Foreground = SportModeTextBrush;
+            DriveModeStatusBorder.BorderBrush = SportModeBorderBrush;
+        }
+        else
+        {
+            DriveModeText.Foreground = ThrottleInactiveBrush;
+            DriveModeStatusBorder.BorderBrush = InactiveBorderBrush;
+        }
+
+        if (runtimeState.IsAutomaticTransmission)
+        {
+            TransmissionModeText.Foreground = AutoModeTextBrush;
+            TransmissionModeStatusBorder.BorderBrush = AutoModeBorderBrush;
+        }
+        else
+        {
+            TransmissionModeText.Foreground = ThrottleInactiveBrush;
+            TransmissionModeStatusBorder.BorderBrush = InactiveBorderBrush;
+        }
+    }
+
+    private void UpdateAudioStatusDisplay()
+    {
+        if (!hasAvailableAudio)
+        {
+            AudioStatusText.Text = "Audio: No Files";
+            AudioStatusText.Foreground = InactiveTextBrush;
+            AudioStatusBorder.BorderBrush = InactiveBorderBrush;
+            return;
+        }
+
+        if (audioService.IsMuted)
+        {
+            AudioStatusText.Text = "Audio: MUTED";
+            AudioStatusText.Foreground = ActiveMessageBrush;
+            AudioStatusBorder.BorderBrush = ActiveBorderBrush;
+            return;
+        }
+
+        AudioStatusText.Text = "Audio: ON";
+        AudioStatusText.Foreground = ThrottleInactiveBrush;
+        AudioStatusBorder.BorderBrush = InactiveBorderBrush;
+    }
+
+    private void UpdateEngineAudioStatusDisplay()
+    {
+        if (!engineAudioService.IsAvailable)
+        {
+            EngineAudioStatusText.Text = "NO LOOP FILE";
+            EngineAudioStatusText.Foreground = InactiveTextBrush;
+            EngineAudioStatusBorder.BorderBrush = InactiveBorderBrush;
+            return;
+        }
+
+        if (audioService.IsMuted)
+        {
+            EngineAudioStatusText.Text = "MUTED";
+            EngineAudioStatusText.Foreground = ActiveMessageBrush;
+            EngineAudioStatusBorder.BorderBrush = ActiveBorderBrush;
+            return;
+        }
+
+        if (runtimeState.IsEngineRunning && engineAudioService.IsPlaying)
+        {
+            EngineAudioStatusText.Text = "PLAYING";
+            EngineAudioStatusText.Foreground = AutoModeTextBrush;
+            EngineAudioStatusBorder.BorderBrush = AutoModeBorderBrush;
+            return;
+        }
+
+        EngineAudioStatusText.Text = "READY";
+        EngineAudioStatusText.Foreground = ThrottleInactiveBrush;
+        EngineAudioStatusBorder.BorderBrush = InactiveBorderBrush;
+    }
+
+    private void PlayVehicleSound(string? relativePath)
+    {
+        audioService.PlaySound(relativePath);
     }
 
     private bool ShouldShowShiftUpIndicator()
@@ -344,8 +604,9 @@ public partial class MeterWindow : Window
         return runtimeState.IsIgnitionOn
             && runtimeState.IsEngineRunning
             && !IsStartupSweepActive
+            && !runtimeState.IsAutomaticTransmission
             && runtimeState.CurrentGearNumber >= 1
             && runtimeState.CurrentGearNumber < vehicle.ForwardGearCount
-            && runtimeState.CurrentRpm >= 8000;
+            && runtimeState.CurrentRpm >= runtimeState.GetCurrentDrivingMode(vehicle).ShiftUpIndicatorRpm;
     }
 }

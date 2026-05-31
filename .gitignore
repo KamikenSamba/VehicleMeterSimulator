@@ -5,3 +5,8 @@ obj/
 *.user
 *.suo
 
+# Local audio assets for prototype testing
+IncomingAudio/
+Assets/Sounds/**/*.wav
+Assets/Sounds/**/*.mp3
+Assets/Sounds/**/*.ogg
