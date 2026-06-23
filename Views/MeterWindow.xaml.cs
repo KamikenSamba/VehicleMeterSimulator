@@ -567,7 +567,7 @@ public partial class MeterWindow : Window
     {
         if (!engineAudioService.IsAvailable)
         {
-            EngineAudioStatusText.Text = "NO LOOP FILE";
+            EngineAudioStatusText.Text = "NO AUDIO FILE";
             EngineAudioStatusText.Foreground = InactiveTextBrush;
             EngineAudioStatusBorder.BorderBrush = InactiveBorderBrush;
             return;
@@ -581,15 +581,19 @@ public partial class MeterWindow : Window
             return;
         }
 
-        if (runtimeState.IsEngineRunning && engineAudioService.IsPlaying)
+        if (engineAudioService.PlaybackMode == EngineAudioPlaybackMode.MultiLayerCrossfade)
         {
-            EngineAudioStatusText.Text = "PLAYING";
+            EngineAudioStatusText.Text = runtimeState.IsEngineRunning && engineAudioService.IsPlaying
+                ? "MULTI-LAYER - PLAYING"
+                : $"MULTI-LAYER READY ({engineAudioService.ActiveLayerCount})";
             EngineAudioStatusText.Foreground = AutoModeTextBrush;
             EngineAudioStatusBorder.BorderBrush = AutoModeBorderBrush;
             return;
         }
 
-        EngineAudioStatusText.Text = "READY";
+        EngineAudioStatusText.Text = runtimeState.IsEngineRunning && engineAudioService.IsPlaying
+            ? "SINGLE LOOP - PLAYING"
+            : "SINGLE LOOP";
         EngineAudioStatusText.Foreground = ThrottleInactiveBrush;
         EngineAudioStatusBorder.BorderBrush = InactiveBorderBrush;
     }

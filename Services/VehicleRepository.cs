@@ -184,48 +184,162 @@ public class VehicleRepository
             throw CreateConfigurationException(filePath, "ReverseAccelerationKmhPerSecond must be greater than 0.");
         }
 
-        ValidateEngineLoopAudio(vehicle.AudioProfile, filePath);
+        ValidateEngineLoopAudio(vehicle.AudioProfile, vehicle, filePath);
     }
 
-    private static void ValidateEngineLoopAudio(VehicleAudioProfile? audioProfile, string filePath)
+    private static void ValidateEngineLoopAudio(VehicleAudioProfile? audioProfile, VehicleProfile vehicle, string filePath)
     {
-        if (audioProfile is null || string.IsNullOrWhiteSpace(audioProfile.EngineLoopSound))
+        if (audioProfile is null)
         {
             return;
         }
 
-        if (audioProfile.EngineLoopReferenceRpm <= 0)
+        if (!string.IsNullOrWhiteSpace(audioProfile.EngineLoopSound))
         {
-            throw CreateConfigurationException(filePath, "EngineLoopReferenceRpm must be greater than 0.");
+            if (audioProfile.EngineLoopReferenceRpm <= 0)
+            {
+                throw CreateConfigurationException(filePath, "EngineLoopReferenceRpm must be greater than 0.");
+            }
+
+            if (audioProfile.EngineLoopMinPitchFactor <= 0)
+            {
+                throw CreateConfigurationException(filePath, "EngineLoopMinPitchFactor must be greater than 0.");
+            }
+
+            if (audioProfile.EngineLoopMaxPitchFactor < audioProfile.EngineLoopMinPitchFactor)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    "EngineLoopMaxPitchFactor must be greater than or equal to EngineLoopMinPitchFactor.");
+            }
+
+            if (audioProfile.EngineLoopBaseVolume is < 0.0 or > 1.0)
+            {
+                throw CreateConfigurationException(filePath, "EngineLoopBaseVolume must be between 0.0 and 1.0.");
+            }
+
+            if (audioProfile.EngineLoopThrottleVolume is < 0.0 or > 1.0)
+            {
+                throw CreateConfigurationException(filePath, "EngineLoopThrottleVolume must be between 0.0 and 1.0.");
+            }
+
+            if (audioProfile.EngineLoopThrottleVolume < audioProfile.EngineLoopBaseVolume)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    "EngineLoopThrottleVolume must be greater than or equal to EngineLoopBaseVolume.");
+            }
         }
 
-        if (audioProfile.EngineLoopMinPitchFactor <= 0)
-        {
-            throw CreateConfigurationException(filePath, "EngineLoopMinPitchFactor must be greater than 0.");
-        }
+        ValidateEngineAudioLayers(audioProfile, vehicle, filePath);
+    }
 
-        if (audioProfile.EngineLoopMaxPitchFactor < audioProfile.EngineLoopMinPitchFactor)
+    private static void ValidateEngineAudioLayers(VehicleAudioProfile audioProfile, VehicleProfile vehicle, string filePath)
+    {
+        if (audioProfile.EngineLayersMasterVolume is < 0.0 or > 1.0)
         {
             throw CreateConfigurationException(
                 filePath,
-                "EngineLoopMaxPitchFactor must be greater than or equal to EngineLoopMinPitchFactor.");
+                "EngineLayersMasterVolume must be between 0.0 and 1.0.");
         }
 
-        if (audioProfile.EngineLoopBaseVolume is < 0.0 or > 1.0)
+        if (audioProfile.EngineAudioLayers is null || audioProfile.EngineAudioLayers.Count == 0)
         {
-            throw CreateConfigurationException(filePath, "EngineLoopBaseVolume must be between 0.0 and 1.0.");
+            return;
         }
 
-        if (audioProfile.EngineLoopThrottleVolume is < 0.0 or > 1.0)
+        var layerIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var layer in audioProfile.EngineAudioLayers)
         {
-            throw CreateConfigurationException(filePath, "EngineLoopThrottleVolume must be between 0.0 and 1.0.");
-        }
+            if (string.IsNullOrWhiteSpace(layer.Id))
+            {
+                throw CreateConfigurationException(filePath, "Engine audio layer Id is required.");
+            }
 
-        if (audioProfile.EngineLoopThrottleVolume < audioProfile.EngineLoopBaseVolume)
-        {
-            throw CreateConfigurationException(
-                filePath,
-                "EngineLoopThrottleVolume must be greater than or equal to EngineLoopBaseVolume.");
+            if (!layerIds.Add(layer.Id))
+            {
+                throw CreateConfigurationException(filePath, $"Duplicate engine audio layer Id was found: {layer.Id}");
+            }
+
+            if (string.IsNullOrWhiteSpace(layer.SoundPath))
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" requires SoundPath.");
+            }
+
+            if (layer.ReferenceRpm <= 0)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have ReferenceRpm greater than 0.");
+            }
+
+            if (layer.MinimumRpm < 0)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have MinimumRpm greater than or equal to 0.");
+            }
+
+            var isIdleLayer = string.Equals(layer.Id, "idle", StringComparison.OrdinalIgnoreCase);
+            if (isIdleLayer)
+            {
+                if (layer.PeakRpm < layer.MinimumRpm)
+                {
+                    throw CreateConfigurationException(
+                        filePath,
+                        $"Engine audio layer \"{layer.Id}\" must have PeakRpm greater than or equal to MinimumRpm.");
+                }
+            }
+            else if (layer.PeakRpm <= layer.MinimumRpm)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have PeakRpm greater than MinimumRpm.");
+            }
+
+            if (layer.MaximumRpm <= layer.PeakRpm)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have MaximumRpm greater than PeakRpm.");
+            }
+
+            if (layer.MaximumRpm <= 0)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have MaximumRpm greater than 0.");
+            }
+
+            if (layer.MaximumRpm > vehicle.MaxRpm)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" has MaximumRpm greater than vehicle MaxRpm.");
+            }
+
+            if (layer.MinimumPitchFactor <= 0)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have MinimumPitchFactor greater than 0.");
+            }
+
+            if (layer.MaximumPitchFactor < layer.MinimumPitchFactor)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have MaximumPitchFactor greater than or equal to MinimumPitchFactor.");
+            }
+
+            if (layer.BaseVolume is < 0.0 or > 1.0)
+            {
+                throw CreateConfigurationException(
+                    filePath,
+                    $"Engine audio layer \"{layer.Id}\" must have BaseVolume between 0.0 and 1.0.");
+            }
         }
     }
 

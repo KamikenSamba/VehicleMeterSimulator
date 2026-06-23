@@ -33,4 +33,8 @@ public class VehicleAudioProfile
     public double EngineLoopBaseVolume { get; init; }
 
     public double EngineLoopThrottleVolume { get; init; }
+
+    public double EngineLayersMasterVolume { get; init; } = 0.8;
+
+    public List<EngineAudioLayerProfile> EngineAudioLayers { get; init; } = new();
 }

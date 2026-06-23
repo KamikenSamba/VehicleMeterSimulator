@@ -93,6 +93,53 @@
     "engineLoopMinPitchFactor": 0.75,
     "engineLoopMaxPitchFactor": 1.80,
     "engineLoopBaseVolume": 0.35,
-    "engineLoopThrottleVolume": 0.75
+    "engineLoopThrottleVolume": 0.75,
+    "engineLayersMasterVolume": 0.8,
+    "engineAudioLayers": [
+      {
+        "id": "idle",
+        "soundPath": "LexusLc500/idle-loop.wav",
+        "referenceRpm": 750,
+        "minimumRpm": 0,
+        "peakRpm": 750,
+        "maximumRpm": 1800,
+        "minimumPitchFactor": 0.85,
+        "maximumPitchFactor": 1.35,
+        "baseVolume": 1.0
+      },
+      {
+        "id": "low",
+        "soundPath": "LexusLc500/low-loop.wav",
+        "referenceRpm": 2200,
+        "minimumRpm": 750,
+        "peakRpm": 2200,
+        "maximumRpm": 3800,
+        "minimumPitchFactor": 0.80,
+        "maximumPitchFactor": 1.35,
+        "baseVolume": 1.0
+      },
+      {
+        "id": "mid",
+        "soundPath": "LexusLc500/mid-loop.wav",
+        "referenceRpm": 4200,
+        "minimumRpm": 2300,
+        "peakRpm": 4200,
+        "maximumRpm": 6000,
+        "minimumPitchFactor": 0.80,
+        "maximumPitchFactor": 1.30,
+        "baseVolume": 1.0
+      },
+      {
+        "id": "high",
+        "soundPath": "LexusLc500/high-loop.wav",
+        "referenceRpm": 6500,
+        "minimumRpm": 4500,
+        "peakRpm": 6500,
+        "maximumRpm": 7400,
+        "minimumPitchFactor": 0.80,
+        "maximumPitchFactor": 1.20,
+        "baseVolume": 1.0
+      }
+    ]
   }
 }

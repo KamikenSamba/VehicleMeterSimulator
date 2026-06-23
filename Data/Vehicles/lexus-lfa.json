@@ -85,6 +85,53 @@
     "engineLoopMinPitchFactor": 0.75,
     "engineLoopMaxPitchFactor": 1.80,
     "engineLoopBaseVolume": 0.35,
-    "engineLoopThrottleVolume": 0.80
+    "engineLoopThrottleVolume": 0.80,
+    "engineLayersMasterVolume": 0.8,
+    "engineAudioLayers": [
+      {
+        "id": "idle",
+        "soundPath": "LexusLfa/idle-loop.wav",
+        "referenceRpm": 1000,
+        "minimumRpm": 0,
+        "peakRpm": 1000,
+        "maximumRpm": 2400,
+        "minimumPitchFactor": 0.85,
+        "maximumPitchFactor": 1.35,
+        "baseVolume": 1.0
+      },
+      {
+        "id": "low",
+        "soundPath": "LexusLfa/low-loop.wav",
+        "referenceRpm": 2800,
+        "minimumRpm": 1000,
+        "peakRpm": 2800,
+        "maximumRpm": 4700,
+        "minimumPitchFactor": 0.80,
+        "maximumPitchFactor": 1.35,
+        "baseVolume": 1.0
+      },
+      {
+        "id": "mid",
+        "soundPath": "LexusLfa/mid-loop.wav",
+        "referenceRpm": 5200,
+        "minimumRpm": 3000,
+        "peakRpm": 5200,
+        "maximumRpm": 7400,
+        "minimumPitchFactor": 0.80,
+        "maximumPitchFactor": 1.30,
+        "baseVolume": 1.0
+      },
+      {
+        "id": "high",
+        "soundPath": "LexusLfa/high-loop.wav",
+        "referenceRpm": 8000,
+        "minimumRpm": 5500,
+        "peakRpm": 8000,
+        "maximumRpm": 9000,
+        "minimumPitchFactor": 0.80,
+        "maximumPitchFactor": 1.20,
+        "baseVolume": 1.0
+      }
+    ]
   }
 }
