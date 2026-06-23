@@ -42,6 +42,18 @@ Assets/Sounds/LexusLc500/
   low-loop.wav
   mid-loop.wav
   high-loop.wav
+
+Assets/Sounds/E13 Note e-POWER/
+  Startup.wav    : system startup sound
+  Seatbelt.wav   : seatbelt warning after startup
+  signal.wav     : legacy local turn signal source
+  Reverse.wav    : legacy local reverse warning source
+  SystemStop.wav : system shutdown sound
+
+Assets/Sounds/NissanNoteE13/
+  turn-signal-loop.wav : one-shot turn signal / hazard click source
+  reverse-loop.wav     : reverse warning loop
+  forward-approach-loop.wav : low-speed forward vehicle-approaching loop
 ```
 
 ## Events
@@ -53,8 +65,13 @@ Assets/Sounds/LexusLc500/
 - Parking brake apply / release
 - Engine running loop fallback: `engine-loop.wav`
 - Optional RPM layers: `idle-loop.wav`, `low-loop.wav`, `mid-loop.wav`, `high-loop.wav`
+- Nissan Note e-POWER E13 startup, seatbelt warning, turn signal, reverse warning, low-speed forward approach warning, and shutdown sounds
 
 The JSON files in `Data/Vehicles` define which relative sound path belongs to each event.
+
+For Nissan Note e-POWER E13, the turn signal file is triggered once per blink cycle instead of being looped directly. The visual turn indicators use the same configured period, so the click timing and lamp timing stay aligned.
+
+For Nissan Note e-POWER E13, `forward-approach-loop.wav` is used only while READY and moving forward at low speed in D or B. It fades in from very low speed, fades out at higher speed, and does not play in R because reverse uses `reverse-loop.wav`.
 
 ## Engine loop audio
 
@@ -83,6 +100,8 @@ You must provide audio files yourself and confirm that you have permission to us
 
 ## Prototype material note
 
-For local RPM-linked engine sound testing, the project may use a temporary loop sound such as Pixabay's `Motor Loop 3` by `soundjoao (Freesound)`. That material is not a Lexus LFA or Lexus LC500 recording, and it must be treated only as a placeholder for verifying the audio implementation.
+For local RPM-linked engine sound testing, the project may use temporary CC0 material from OpenGameArt, such as `racing car engine sound loops` by `domasx2`, and `Car engine start 01` by `looneybits`. These materials are not Lexus LFA or Lexus LC500 recordings, and they must be treated only as placeholders for verifying the audio implementation.
 
 Audio files are intentionally excluded from Git by `.gitignore`. Before publishing builds or pushing audio assets anywhere, re-check the source license and whether bundling the converted audio with the application is permitted.
+
+The Nissan Note e-POWER E13 local turn signal, reverse warning, and forward approach warning files are prototype test assets. Do not describe them as genuine Nissan recordings unless their source and license have been separately verified.

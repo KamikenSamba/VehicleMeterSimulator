@@ -1,0 +1,64 @@
+<UserControl x:Class="VehicleMeterSimulator.Views.Controls.NissanNoteE13.NoteE13WarningLampLayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="920"
+             Height="74"
+             Background="Transparent">
+    <UserControl.Resources>
+        <Style x:Key="LampBorderStyle" TargetType="Border">
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="#07080A" />
+            <Setter Property="BorderBrush" Value="#2A2C30" />
+        </Style>
+        <Style x:Key="LampTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#34383C" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Resources>
+
+    <UniformGrid Columns="12">
+        <Border x:Name="ReadyLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="ReadyLampText" Text="READY" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="ParkingLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="ParkingLampText" Text="P" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="AutoHoldLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="AutoHoldLampText" Text="AUTO HOLD" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="LeftTurnLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="LeftTurnLampText" Text="◀" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="RightTurnLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="RightTurnLampText" Text="▶" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="TailLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="TailLampText" Text="TAIL" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="HighBeamLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="HighBeamLampText" Text="HIGH" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="BatteryLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="BatteryLampText" Text="12V" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="BrakeLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="BrakeLampText" Text="BRAKE" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="AbsLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="AbsLampText" Text="ABS" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="ChargeLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="ChargeLampText" Text="CHG" Style="{StaticResource LampTextStyle}" />
+        </Border>
+        <Border x:Name="MannerLampBorder" Style="{StaticResource LampBorderStyle}">
+            <TextBlock x:Name="MannerLampText" Text="MANNER" Style="{StaticResource LampTextStyle}" />
+        </Border>
+    </UniformGrid>
+</UserControl>

@@ -70,6 +70,17 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (vehicle.UsesElectricPowerMeter)
+        {
+            EngineTextBlock.Text = vehicle.EngineDescription;
+            PowerTextBlock.Text = "e-POWER display model";
+            TorqueTextBlock.Text = "Not shown in this prototype";
+            TransmissionTextBlock.Text = vehicle.Transmission;
+            DriveTypeTextBlock.Text = vehicle.DriveType;
+            ForwardGearsTextBlock.Text = string.Join(" / ", vehicle.SupportedShiftPositions);
+            return;
+        }
+
         EngineTextBlock.Text = vehicle.EngineDescription;
         PowerTextBlock.Text = vehicle.PowerDisplay;
         TorqueTextBlock.Text = vehicle.TorqueDisplay;

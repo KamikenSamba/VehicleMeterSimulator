@@ -1,0 +1,49 @@
+{
+  "id": "nissan-note-e13-epower",
+  "manufacturer": "Nissan",
+  "name": "Nissan Note e-POWER E13",
+  "meterStyleId": "note-e13-authentic",
+  "engineDescription": "e-POWER electric drive",
+  "powertrainType": "e-POWER",
+  "transmission": "Electric shift selector",
+  "transmissionType": "electric-selector",
+  "driveType": "FF",
+  "supportedShiftPositions": [
+    "P",
+    "R",
+    "N",
+    "D",
+    "B"
+  ],
+  "supportedDriveModes": [
+    "NORMAL",
+    "SPORT",
+    "ECO"
+  ],
+  "defaultShiftPosition": "P",
+  "defaultDriveMode": "NORMAL",
+  "audioProfile": {
+    "ignitionOnSound": "E13 Note e-POWER/Startup.wav",
+    "ignitionOffSound": "E13 Note e-POWER/SystemStop.wav",
+    "systemStopSound": "E13 Note e-POWER/SystemStop.wav",
+    "seatbeltWarningSound": "E13 Note e-POWER/Seatbelt.wav"
+  },
+  "noteE13AudioProfile": {
+    "turnSignalSound": "NissanNoteE13/turn-signal-loop.wav",
+    "reverseLoopSound": "NissanNoteE13/reverse-loop.wav",
+    "forwardApproachLoopSound": "NissanNoteE13/forward-approach-loop.wav",
+    "turnSignalPeriodMs": 311,
+    "turnSignalLampPeriodMs": 622,
+    "turnSignalLampOnMs": 156,
+    "turnSignalClickPlaybackMs": 250,
+    "turnSignalVolume": 0.85,
+    "reverseLoopVolume": 0.75,
+    "reverseFadeMilliseconds": 80,
+    "forwardApproachBaseVolume": 0.65,
+    "forwardApproachStartSpeedKmh": 0.5,
+    "forwardApproachFullVolumeSpeedKmh": 5.0,
+    "forwardApproachFadeOutStartSpeedKmh": 18.0,
+    "forwardApproachStopSpeedKmh": 25.0,
+    "forwardApproachFadeMilliseconds": 180
+  }
+}

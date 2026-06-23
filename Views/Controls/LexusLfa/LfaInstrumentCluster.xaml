@@ -1,0 +1,217 @@
+<UserControl x:Class="VehicleMeterSimulator.Views.Controls.LexusLfa.LfaInstrumentCluster"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lfa="clr-namespace:VehicleMeterSimulator.Views.Controls.LexusLfa"
+             Background="Transparent">
+    <Viewbox Stretch="Uniform">
+        <Canvas Width="1180" Height="610">
+            <Canvas.Background>
+                <RadialGradientBrush Center="0.52,0.52" GradientOrigin="0.52,0.52" RadiusX="0.74" RadiusY="0.84">
+                    <GradientStop Color="#12161C" Offset="0.0" />
+                    <GradientStop Color="#050507" Offset="0.62" />
+                    <GradientStop Color="#000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </Canvas.Background>
+
+            <Border Width="1180"
+                    Height="610"
+                    BorderBrush="#171A20"
+                    BorderThickness="1"
+                    Background="#030305" />
+
+            <StackPanel x:Name="MenuPanel"
+                        Canvas.Left="42"
+                        Canvas.Top="112"
+                        Width="250"
+                        Visibility="Collapsed">
+                <TextBlock Text="METER SETTINGS"
+                           Foreground="#D8D8D3"
+                           FontSize="19"
+                           FontWeight="SemiBold" />
+                <Border Margin="0,14,0,0"
+                        Padding="14"
+                        Background="#101114"
+                        BorderBrush="#383A40"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Pointer Color" Foreground="#E6E6E0" FontSize="15" Margin="0,0,0,12" />
+                        <TextBlock Text="Rev Indicator" Foreground="#A5AAA8" FontSize="15" Margin="0,0,0,12" />
+                        <TextBlock Text="Drive Monitor" Foreground="#A5AAA8" FontSize="15" Margin="0,0,0,12" />
+                        <TextBlock Text="Trip / ODO" Foreground="#A5AAA8" FontSize="15" />
+                    </StackPanel>
+                </Border>
+                <TextBlock Margin="0,16,0,0"
+                           Text="MENU PREVIEW"
+                           Foreground="#AA4438"
+                           FontSize="13"
+                           FontWeight="Bold" />
+            </StackPanel>
+
+            <Canvas x:Name="TachCanvas" Width="620" Height="520" Canvas.Left="290" Canvas.Top="36">
+                <Canvas.RenderTransform>
+                    <TranslateTransform x:Name="TachShiftTransform" />
+                </Canvas.RenderTransform>
+
+                <Ellipse Width="520" Height="520" Canvas.Left="50" Canvas.Top="0"
+                         Fill="#050507"
+                         Stroke="#404247"
+                         StrokeThickness="8" />
+                <Ellipse Width="488" Height="488" Canvas.Left="66" Canvas.Top="16"
+                         Stroke="#96A6B0"
+                         StrokeThickness="1.5"
+                         Opacity="0.62" />
+                <Ellipse x:Name="ModeAccentRing"
+                         Width="548"
+                         Height="548"
+                         Canvas.Left="36"
+                         Canvas.Top="-14"
+                         Stroke="#1E242A"
+                         StrokeThickness="4"
+                         Opacity="0.85" />
+
+                <Path x:Name="RedZoneArc"
+                      Stroke="#CC2424"
+                      StrokeThickness="16"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Opacity="0.82" />
+                <Path x:Name="RevIndicatorArc"
+                      Stroke="#2FEB6D"
+                      StrokeThickness="8"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Opacity="0" />
+
+                <Canvas x:Name="TickCanvas" />
+                <Canvas x:Name="NumberCanvas" />
+
+                <TextBlock Canvas.Left="238" Canvas.Top="84"
+                           Text="×1000 r/min"
+                           Foreground="#B9BDBD"
+                           FontSize="18"
+                           FontWeight="SemiBold" />
+
+                <StackPanel Canvas.Left="204" Canvas.Top="178"
+                            Width="212"
+                            HorizontalAlignment="Center">
+                    <TextBlock x:Name="SpeedText"
+                               Text="0"
+                               Foreground="#F2F3F0"
+                               FontSize="72"
+                               FontWeight="SemiBold"
+                               TextAlignment="Center" />
+                    <TextBlock Text="km/h"
+                               Foreground="#AAB0B2"
+                               FontSize="19"
+                               FontWeight="SemiBold"
+                               TextAlignment="Center" />
+                    <TextBlock x:Name="GearText"
+                               Text="N"
+                               Margin="0,6,0,0"
+                               Foreground="#FFFFFF"
+                               FontSize="66"
+                               FontWeight="Bold"
+                               TextAlignment="Center" />
+                    <TextBlock x:Name="DriveModeText"
+                               Text="NORMAL / MANUAL"
+                               Foreground="#899196"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               TextAlignment="Center" />
+                </StackPanel>
+
+                <Line x:Name="NeedleLine"
+                      X1="310"
+                      Y1="260"
+                      X2="310"
+                      Y2="74"
+                      Stroke="#F7FDFF"
+                      StrokeThickness="5"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Triangle">
+                    <Line.RenderTransform>
+                        <RotateTransform x:Name="NeedleRotateTransform"
+                                         CenterX="310"
+                                         CenterY="260" />
+                    </Line.RenderTransform>
+                </Line>
+                <Ellipse Width="24" Height="24" Canvas.Left="298" Canvas.Top="248"
+                         Fill="#D8E5EA"
+                         Stroke="#2B2E33"
+                         StrokeThickness="3" />
+
+                <TextBlock x:Name="RpmText"
+                           Canvas.Left="240"
+                           Canvas.Top="440"
+                           Width="140"
+                           Text="RPM: 0"
+                           Foreground="#B9BDBD"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextAlignment="Center" />
+                <TextBlock x:Name="SelfCheckText"
+                           Canvas.Left="220"
+                           Canvas.Top="118"
+                           Width="180"
+                           Text="SELF CHECK"
+                           Foreground="#FF6157"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           TextAlignment="Center"
+                           Visibility="Collapsed" />
+            </Canvas>
+
+            <Border Canvas.Left="38" Canvas.Top="140" Width="230" Height="265"
+                    Background="#08090C"
+                    BorderBrush="#2D3036"
+                    BorderThickness="1"
+                    Padding="18">
+                <StackPanel>
+                    <TextBlock Text="DRIVE MONITOR" Foreground="#777D82" FontSize="12" FontWeight="Bold" />
+                    <TextBlock x:Name="OdometerText" Margin="0,14,0,0" Text="ODO 000000 km" Foreground="#D7DAD7" FontSize="18" />
+                    <TextBlock x:Name="TripText" Margin="0,8,0,0" Text="TRIP A 0.0 km" Foreground="#AEB5B7" FontSize="15" />
+                    <TextBlock x:Name="ClockText" Margin="0,24,0,0" Text="12:00" Foreground="#E6E8E5" FontSize="26" FontWeight="SemiBold" />
+                    <TextBlock Text="OUTSIDE" Margin="0,24,0,0" Foreground="#777D82" FontSize="12" FontWeight="Bold" />
+                    <TextBlock x:Name="OutsideTempText" Text="25°C" Foreground="#D7DAD7" FontSize="24" />
+                </StackPanel>
+            </Border>
+
+            <Border Canvas.Left="920" Canvas.Top="140" Width="220" Height="265"
+                    Background="#08090C"
+                    BorderBrush="#2D3036"
+                    BorderThickness="1"
+                    Padding="18">
+                <StackPanel>
+                    <TextBlock Text="TEMP / PRESSURE" Foreground="#777D82" FontSize="12" FontWeight="Bold" />
+                    <TextBlock Text="WATER TEMP" Margin="0,14,0,0" Foreground="#90999F" FontSize="13" />
+                    <TextBlock x:Name="WaterTempText" Text="82°C" Foreground="#D7DAD7" FontSize="25" FontWeight="SemiBold" />
+                    <TextBlock Text="ENGINE OIL" Margin="0,16,0,0" Foreground="#90999F" FontSize="13" />
+                    <TextBlock x:Name="OilTempText" Text="74°C" Foreground="#D7DAD7" FontSize="25" FontWeight="SemiBold" />
+                    <TextBlock Text="OIL PRESS" Margin="0,16,0,0" Foreground="#90999F" FontSize="13" />
+                    <TextBlock x:Name="OilPressureText" Text="3.2 bar" Foreground="#D7DAD7" FontSize="22" FontWeight="SemiBold" />
+                    <TextBlock Text="FUEL 72%" Margin="0,18,0,0" Foreground="#B3B8B5" FontSize="17" FontWeight="SemiBold" />
+                </StackPanel>
+            </Border>
+
+            <lfa:LfaWarningLampLayer x:Name="WarningLampLayer"
+                                     Canvas.Left="30"
+                                     Canvas.Top="454" />
+
+            <Border Canvas.Left="258"
+                    Canvas.Top="555"
+                    Width="664"
+                    Padding="10,7"
+                    Background="#050507"
+                    BorderBrush="#24262A"
+                    BorderThickness="1">
+                <TextBlock x:Name="SystemMessageText"
+                           Text="Press I to switch ignition on"
+                           Foreground="#B6B8B4"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+            </Border>
+        </Canvas>
+    </Viewbox>
+</UserControl>

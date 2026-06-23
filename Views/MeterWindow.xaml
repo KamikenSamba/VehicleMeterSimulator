@@ -1,9 +1,11 @@
-<Window x:Class="VehicleMeterSimulator.Views.MeterWindow"
+﻿<Window x:Class="VehicleMeterSimulator.Views.MeterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:VehicleMeterSimulator.Views.Controls"
+        xmlns:lfa="clr-namespace:VehicleMeterSimulator.Views.Controls.LexusLfa"
+        xmlns:note="clr-namespace:VehicleMeterSimulator.Views.Controls.NissanNoteE13"
         mc:Ignorable="d"
         Title="Meter Display"
         Height="860"
@@ -21,9 +23,24 @@
     <Window.Resources>
         <Style x:Key="ControlHintStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#A6A6A1" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="ControlKeyStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#F0F0EA" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Margin" Value="0,0,10,4" />
+            <Setter Property="MinWidth" Value="42" />
+        </Style>
+
+        <Style x:Key="ControlGroupTitleStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#DC3636" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
 
         <Style x:Key="StatusLabelStyle" TargetType="TextBlock">
@@ -74,6 +91,7 @@
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
+                    x:Name="PowertrainStatusPanel"
                     Margin="0,40,26,40"
                     Padding="22"
                     Background="#08080B"
@@ -155,6 +173,7 @@
             </Border>
 
             <Grid Grid.Column="1"
+                  x:Name="GenericMeterPanel"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -171,6 +190,7 @@
             </Grid>
 
             <Border Grid.Column="2"
+                    x:Name="InputStatusPanel"
                     Margin="26,40,0,40"
                     Padding="22"
                     Background="#08080B"
@@ -235,6 +255,27 @@
                                    HorizontalAlignment="Center" />
                     </Border>
 
+                    <Border x:Name="MasterVolumeStatusBorder"
+                            Margin="0,14,0,0"
+                            Padding="18,12"
+                            BorderBrush="#303034"
+                            BorderThickness="1"
+                            Background="#0D0D10">
+                        <StackPanel>
+                            <TextBlock Text="MASTER VOLUME"
+                                       Foreground="#777772"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock x:Name="MasterVolumeText"
+                                       Text="75%"
+                                       Foreground="#BDBDB8"
+                                       FontSize="19"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
                     <Border x:Name="EngineAudioStatusBorder"
                             Margin="0,14,0,0"
                             Padding="18,12"
@@ -271,27 +312,192 @@
                     </Border>
                 </StackPanel>
             </Border>
+
+            <lfa:LfaInstrumentCluster x:Name="LfaInstrumentCluster"
+                                      Grid.ColumnSpan="3"
+                                      Visibility="Collapsed"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch" />
+
+            <note:NoteE13InstrumentCluster x:Name="NoteE13InstrumentCluster"
+                                           Grid.ColumnSpan="3"
+                                           Visibility="Collapsed"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Stretch" />
+
+            <controls:AudioTuningPanel x:Name="AudioTuningPanel"
+                                       Grid.Column="2"
+                                       Margin="0,0,0,0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Top"
+                                       Visibility="Collapsed" />
+
+            <Border x:Name="AudioDebugPanel"
+                    Grid.Column="1"
+                    Width="380"
+                    Padding="16"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Visibility="Collapsed"
+                    Background="#DD050507"
+                    BorderBrush="#323238"
+                    BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="AUDIO DEBUG"
+                               Foreground="#DC3636"
+                               FontSize="13"
+                               FontWeight="SemiBold" />
+                    <TextBlock x:Name="AudioDebugText"
+                               Margin="0,8,0,0"
+                               Foreground="#D0D0CA"
+                               FontFamily="Consolas"
+                               FontSize="12"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
         </Grid>
 
         <Border Grid.Row="2"
                 BorderBrush="#17171A"
                 BorderThickness="0,1,0,0"
-                Padding="24,20">
-            <UniformGrid Columns="11"
-                         MaxWidth="1320"
-                         HorizontalAlignment="Center">
-                <TextBlock Text="I : Ignition ON / OFF" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="S : Engine Start / Stop" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="A : Accelerator" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="Z : Brake" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="&#x2191; : Shift Up / Drive" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="&#x2193; : Shift Down / Neutral" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="R : Reverse Gear" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="P : Parking Brake" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="D : Drive Mode" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="T : Transmission Mode" Style="{StaticResource ControlHintStyle}" />
-                <TextBlock Text="M : Mute Audio" Style="{StaticResource ControlHintStyle}" />
-            </UniformGrid>
+                Padding="24,14">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+
+                <Border x:Name="CombustionKeyGuidePanel"
+                        Width="560"
+                        Margin="0,0,12,0"
+                        Padding="14,10"
+                        Background="#08080B"
+                        BorderBrush="#242428"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="DRIVING CONTROLS" Style="{StaticResource ControlGroupTitleStyle}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="I" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Ignition / Power" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="S" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Engine Start / Stop" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="A" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="Accelerator" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Z" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="3" Text="Brake" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Up / Down" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="Shift / Drive Select" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="R / P" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="3" Text="Reverse / Parking Brake" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="D / T" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="Drive / Transmission Mode" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="M" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="3" Text="Mute Audio" Style="{StaticResource ControlHintStyle}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="LfaKeyGuidePanel"
+                        Width="390"
+                        Margin="0,0,12,0"
+                        Padding="14,10"
+                        Background="#08080B"
+                        BorderBrush="#242428"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="AUDIO / LFA DISPLAY" Style="{StaticResource ControlGroupTitleStyle}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="+ / -" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Master Volume" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="V / F2" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="Audio Debug / Tuning" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Q / E / H" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="Turn Signals / Hazard" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="L / B" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="Tail / High Beam (LFA)" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="F3 / F4" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="Lamp Test / LFA Menu" Style="{StaticResource ControlHintStyle}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="NoteKeyGuidePanel"
+                        Width="760"
+                        Padding="14,10"
+                        Background="#08080B"
+                        BorderBrush="#242428"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="NISSAN NOTE e-POWER E13" Style="{StaticResource ControlGroupTitleStyle}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="I" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Power Switch / READY" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="A / Z" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Accelerator / Brake" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="P/R/N/D/B" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="Shift Position" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="K" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="3" Text="Electric Parking Brake" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="O" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="Auto Brake Hold" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="C" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="3" Text="NORMAL / SPORT / ECO" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="G / Y" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="Charge / Manner Mode" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="L / U" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="3" Text="Tail / High Beam" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Q/E/H" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="Turn / Hazard" Style="{StaticResource ControlHintStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="2" Text="F3" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="3" Text="State Preview Panel" Style="{StaticResource ControlHintStyle}" />
+
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="M" Style="{StaticResource ControlKeyStyle}" />
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="Mute Audio" Style="{StaticResource ControlHintStyle}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </Border>
     </Grid>
 </Window>

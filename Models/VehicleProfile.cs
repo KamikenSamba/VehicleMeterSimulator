@@ -4,15 +4,27 @@ namespace VehicleMeterSimulator.Models;
 
 public class VehicleProfile
 {
-    public required string Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 
-    public required string Manufacturer { get; init; }
+    public string Manufacturer { get; init; } = string.Empty;
 
-    public required string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
 
-    public required string MeterStyleId { get; init; }
+    public string MeterStyleId { get; init; } = string.Empty;
 
-    public required string EngineDescription { get; init; }
+    public string EngineDescription { get; init; } = string.Empty;
+
+    public string PowertrainType { get; init; } = "combustion";
+
+    public string TransmissionType { get; init; } = string.Empty;
+
+    public IReadOnlyList<string> SupportedShiftPositions { get; init; } = [];
+
+    public IReadOnlyList<string> SupportedDriveModes { get; init; } = [];
+
+    public string DefaultShiftPosition { get; init; } = string.Empty;
+
+    public string DefaultDriveMode { get; init; } = string.Empty;
 
     public int MaxPowerPs { get; init; }
 
@@ -22,9 +34,9 @@ public class VehicleProfile
 
     public int MaxTorqueRpm { get; init; }
 
-    public required string Transmission { get; init; }
+    public string Transmission { get; init; } = string.Empty;
 
-    public required string DriveType { get; init; }
+    public string DriveType { get; init; } = string.Empty;
 
     public int MaxRpm { get; init; }
 
@@ -36,19 +48,19 @@ public class VehicleProfile
 
     public int ForwardGearCount { get; init; }
 
-    public required string DefaultDrivingModeId { get; init; }
+    public string DefaultDrivingModeId { get; init; } = string.Empty;
 
-    public required IReadOnlyList<DrivingModeProfile> DrivingModes { get; init; }
+    public IReadOnlyList<DrivingModeProfile> DrivingModes { get; init; } = [];
 
-    public required string DefaultTransmissionModeId { get; init; }
+    public string DefaultTransmissionModeId { get; init; } = string.Empty;
 
-    public required IReadOnlyList<string> SupportedTransmissionModeIds { get; init; }
+    public IReadOnlyList<string> SupportedTransmissionModeIds { get; init; } = [];
 
     public double MaxSimulationSpeedKmh { get; init; }
 
-    public required IReadOnlyList<double> RpmPerKmhByGear { get; init; }
+    public IReadOnlyList<double> RpmPerKmhByGear { get; init; } = [];
 
-    public required IReadOnlyList<double> AccelerationKmhPerSecondByGear { get; init; }
+    public IReadOnlyList<double> AccelerationKmhPerSecondByGear { get; init; } = [];
 
     public double BrakeDecelerationKmhPerSecond { get; init; }
 
@@ -62,7 +74,14 @@ public class VehicleProfile
 
     public VehicleAudioProfile? AudioProfile { get; init; }
 
+    public NoteE13AudioProfile? NoteE13AudioProfile { get; init; }
+
     public string PowerDisplay => $"{MaxPowerPs} PS / {MaxPowerRpm:N0} rpm";
 
     public string TorqueDisplay => $"{MaxTorqueNm} N\u00B7m / {MaxTorqueRpm:N0} rpm";
+
+    public bool UsesElectricPowerMeter => string.Equals(
+        MeterStyleId,
+        "note-e13-authentic",
+        System.StringComparison.OrdinalIgnoreCase);
 }

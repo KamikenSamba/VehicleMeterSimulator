@@ -96,6 +96,17 @@ public class VehicleRepository
             throw CreateConfigurationException(filePath, "Name is required.");
         }
 
+        if (string.IsNullOrWhiteSpace(vehicle.MeterStyleId))
+        {
+            throw CreateConfigurationException(filePath, "MeterStyleId is required.");
+        }
+
+        if (vehicle.UsesElectricPowerMeter)
+        {
+            ValidateElectricPowerMeterVehicle(vehicle, filePath);
+            return;
+        }
+
         if (vehicle.MaxRpm <= 0)
         {
             throw CreateConfigurationException(filePath, "MaxRpm must be greater than 0.");
@@ -129,11 +140,6 @@ public class VehicleRepository
         if (vehicle.ForwardGearCount < 1)
         {
             throw CreateConfigurationException(filePath, "ForwardGearCount must be greater than or equal to 1.");
-        }
-
-        if (string.IsNullOrWhiteSpace(vehicle.MeterStyleId))
-        {
-            throw CreateConfigurationException(filePath, "MeterStyleId is required.");
         }
 
         ValidateDrivingModes(vehicle, filePath);
@@ -185,6 +191,173 @@ public class VehicleRepository
         }
 
         ValidateEngineLoopAudio(vehicle.AudioProfile, vehicle, filePath);
+    }
+
+    private static void ValidateElectricPowerMeterVehicle(VehicleProfile vehicle, string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(vehicle.PowertrainType))
+        {
+            throw CreateConfigurationException(filePath, "PowertrainType is required for note-e13-authentic vehicles.");
+        }
+
+        if (string.IsNullOrWhiteSpace(vehicle.TransmissionType))
+        {
+            throw CreateConfigurationException(filePath, "TransmissionType is required for note-e13-authentic vehicles.");
+        }
+
+        if (vehicle.SupportedShiftPositions is null || vehicle.SupportedShiftPositions.Count == 0)
+        {
+            throw CreateConfigurationException(filePath, "SupportedShiftPositions must contain at least one value.");
+        }
+
+        var shiftPositions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var position in vehicle.SupportedShiftPositions)
+        {
+            if (string.IsNullOrWhiteSpace(position))
+            {
+                throw CreateConfigurationException(filePath, "SupportedShiftPositions contains an empty value.");
+            }
+
+            if (!shiftPositions.Add(position))
+            {
+                throw CreateConfigurationException(filePath, $"Duplicate shift position was found: {position}");
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(vehicle.DefaultShiftPosition)
+            || !shiftPositions.Contains(vehicle.DefaultShiftPosition))
+        {
+            throw CreateConfigurationException(
+                filePath,
+                $"DefaultShiftPosition \"{vehicle.DefaultShiftPosition}\" was not found in SupportedShiftPositions.");
+        }
+
+        if (vehicle.SupportedDriveModes is null || vehicle.SupportedDriveModes.Count == 0)
+        {
+            throw CreateConfigurationException(filePath, "SupportedDriveModes must contain at least one value.");
+        }
+
+        var driveModes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var mode in vehicle.SupportedDriveModes)
+        {
+            if (string.IsNullOrWhiteSpace(mode))
+            {
+                throw CreateConfigurationException(filePath, "SupportedDriveModes contains an empty value.");
+            }
+
+            if (!driveModes.Add(mode))
+            {
+                throw CreateConfigurationException(filePath, $"Duplicate drive mode was found: {mode}");
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(vehicle.DefaultDriveMode)
+            || !driveModes.Contains(vehicle.DefaultDriveMode))
+        {
+            throw CreateConfigurationException(
+                filePath,
+                $"DefaultDriveMode \"{vehicle.DefaultDriveMode}\" was not found in SupportedDriveModes.");
+        }
+
+        ValidateNoteE13AudioProfile(vehicle.NoteE13AudioProfile, filePath);
+        ValidateEngineLoopAudio(vehicle.AudioProfile, vehicle, filePath);
+    }
+
+    private static void ValidateNoteE13AudioProfile(NoteE13AudioProfile? audioProfile, string filePath)
+    {
+        if (audioProfile is null)
+        {
+            return;
+        }
+
+        if (audioProfile.TurnSignalPeriodMs <= 0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.TurnSignalPeriodMs must be greater than 0.");
+        }
+
+        if (audioProfile.TurnSignalLampOnMs <= 0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.TurnSignalLampOnMs must be greater than 0.");
+        }
+
+        var turnSignalLampPeriodMs = audioProfile.TurnSignalLampPeriodMs > 0
+            ? audioProfile.TurnSignalLampPeriodMs
+            : audioProfile.TurnSignalPeriodMs;
+
+        if (audioProfile.TurnSignalLampPeriodMs < 0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.TurnSignalLampPeriodMs must be greater than or equal to 0.");
+        }
+
+        if (audioProfile.TurnSignalLampOnMs >= turnSignalLampPeriodMs)
+        {
+            throw CreateConfigurationException(
+                filePath,
+                "NoteE13AudioProfile.TurnSignalLampOnMs must be less than the lamp period.");
+        }
+
+        if (audioProfile.TurnSignalClickPlaybackMs <= 0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.TurnSignalClickPlaybackMs must be greater than 0.");
+        }
+
+        if (audioProfile.TurnSignalClickPlaybackMs >= audioProfile.TurnSignalPeriodMs)
+        {
+            throw CreateConfigurationException(
+                filePath,
+                "NoteE13AudioProfile.TurnSignalClickPlaybackMs must be less than TurnSignalPeriodMs.");
+        }
+
+        if (audioProfile.TurnSignalVolume is < 0.0 or > 1.0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.TurnSignalVolume must be between 0.0 and 1.0.");
+        }
+
+        if (audioProfile.ReverseLoopVolume is < 0.0 or > 1.0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.ReverseLoopVolume must be between 0.0 and 1.0.");
+        }
+
+        if (audioProfile.ReverseFadeMilliseconds < 0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.ReverseFadeMilliseconds must be greater than or equal to 0.");
+        }
+
+        if (audioProfile.ForwardApproachStartSpeedKmh < 0.0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.ForwardApproachStartSpeedKmh must be greater than or equal to 0.");
+        }
+
+        if (audioProfile.ForwardApproachFullVolumeSpeedKmh <= audioProfile.ForwardApproachStartSpeedKmh)
+        {
+            throw CreateConfigurationException(
+                filePath,
+                "NoteE13AudioProfile.ForwardApproachFullVolumeSpeedKmh must be greater than ForwardApproachStartSpeedKmh.");
+        }
+
+        if (audioProfile.ForwardApproachFadeOutStartSpeedKmh < audioProfile.ForwardApproachFullVolumeSpeedKmh)
+        {
+            throw CreateConfigurationException(
+                filePath,
+                "NoteE13AudioProfile.ForwardApproachFadeOutStartSpeedKmh must be greater than or equal to ForwardApproachFullVolumeSpeedKmh.");
+        }
+
+        if (audioProfile.ForwardApproachStopSpeedKmh <= audioProfile.ForwardApproachFadeOutStartSpeedKmh)
+        {
+            throw CreateConfigurationException(
+                filePath,
+                "NoteE13AudioProfile.ForwardApproachStopSpeedKmh must be greater than ForwardApproachFadeOutStartSpeedKmh.");
+        }
+
+        if (audioProfile.ForwardApproachBaseVolume is < 0.0 or > 1.0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.ForwardApproachBaseVolume must be between 0.0 and 1.0.");
+        }
+
+        if (audioProfile.ForwardApproachFadeMilliseconds < 0)
+        {
+            throw CreateConfigurationException(filePath, "NoteE13AudioProfile.ForwardApproachFadeMilliseconds must be greater than or equal to 0.");
+        }
     }
 
     private static void ValidateEngineLoopAudio(VehicleAudioProfile? audioProfile, VehicleProfile vehicle, string filePath)

@@ -10,3 +10,9 @@ IncomingAudio/
 Assets/Sounds/**/*.wav
 Assets/Sounds/**/*.mp3
 Assets/Sounds/**/*.ogg
+
+# Temporary audio tuning exports
+TuningExports/
+
+# Local official-reference materials for meter reproduction
+References/

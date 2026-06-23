@@ -6,6 +6,12 @@ public class VehicleAudioProfile
 
     public string? IgnitionOffSound { get; init; }
 
+    public string? SystemStopSound { get; init; }
+
+    public string? SeatbeltWarningSound { get; init; }
+
+    public string? TurnSignalSound { get; init; }
+
     public string? EngineStartSound { get; init; }
 
     public string? EngineStopSound { get; init; }
@@ -17,6 +23,8 @@ public class VehicleAudioProfile
     public string? ReverseEngageSound { get; init; }
 
     public string? ReverseDisengageSound { get; init; }
+
+    public string? ReverseWarningSound { get; init; }
 
     public string? ParkingBrakeAppliedSound { get; init; }
 

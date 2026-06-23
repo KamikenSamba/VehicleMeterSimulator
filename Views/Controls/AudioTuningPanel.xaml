@@ -1,0 +1,191 @@
+<UserControl x:Class="VehicleMeterSimulator.Views.Controls.AudioTuningPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="390">
+    <UserControl.Resources>
+        <Style x:Key="TuningLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#8F8F8A" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="TuningValueStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#E4E4DE" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Resources>
+
+    <Border Padding="16"
+            Background="#EE050507"
+            BorderBrush="#3A3A40"
+            BorderThickness="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      MaxHeight="600">
+            <StackPanel>
+                <TextBlock Text="AUDIO TUNING"
+                           Foreground="#DC3636"
+                           FontSize="17"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="DEVELOPER TOOL"
+                           Margin="0,2,0,14"
+                           Foreground="#8F8F8A"
+                           FontSize="11"
+                           FontWeight="SemiBold" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Vehicle" Style="{StaticResource TuningLabelStyle}" />
+                    <TextBlock x:Name="VehicleText" Grid.Row="0" Grid.Column="1" Text="-" Style="{StaticResource TuningValueStyle}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Text="Playback Mode" Style="{StaticResource TuningLabelStyle}" />
+                    <TextBlock x:Name="PlaybackModeText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Text="-" Style="{StaticResource TuningValueStyle}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Text="Preview" Style="{StaticResource TuningLabelStyle}" />
+                    <CheckBox x:Name="PreviewCheckBox"
+                              Grid.Row="2"
+                              Grid.Column="1"
+                              Margin="0,8,0,0"
+                              Content="Use preview RPM for audio only"
+                              Foreground="#D0D0CA"
+                              Checked="PreviewCheckBox_Changed"
+                              Unchecked="PreviewCheckBox_Changed" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Text="Preview RPM" Style="{StaticResource TuningLabelStyle}" />
+                    <TextBlock x:Name="PreviewRpmText"
+                               Grid.Row="3"
+                               Grid.Column="1"
+                               Margin="0,8,0,0"
+                               Text="-"
+                               Style="{StaticResource TuningValueStyle}" />
+                </Grid>
+
+                <Slider x:Name="PreviewRpmSlider"
+                        Margin="0,8,0,18"
+                        Minimum="0"
+                        Maximum="10000"
+                        TickFrequency="100"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="PreviewRpmSlider_ValueChanged" />
+
+                <TextBlock Text="COMMON SETTINGS" Style="{StaticResource TuningLabelStyle}" />
+                <TextBlock x:Name="LayersMasterVolumeText" Margin="0,8,0,0" Text="Layers Master Volume: -" Style="{StaticResource TuningValueStyle}" />
+                <Slider x:Name="LayersMasterVolumeSlider"
+                        Minimum="0"
+                        Maximum="1"
+                        TickFrequency="0.05"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="CommonSlider_ValueChanged" />
+
+                <TextBlock x:Name="LoopBaseVolumeText" Margin="0,8,0,0" Text="Loop Base Volume: -" Style="{StaticResource TuningValueStyle}" />
+                <Slider x:Name="LoopBaseVolumeSlider"
+                        Minimum="0"
+                        Maximum="1"
+                        TickFrequency="0.05"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="CommonSlider_ValueChanged" />
+
+                <TextBlock x:Name="LoopThrottleVolumeText" Margin="0,8,0,0" Text="Loop Throttle Volume: -" Style="{StaticResource TuningValueStyle}" />
+                <Slider x:Name="LoopThrottleVolumeSlider"
+                        Minimum="0"
+                        Maximum="1"
+                        TickFrequency="0.05"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="CommonSlider_ValueChanged" />
+
+                <TextBlock Margin="0,18,0,0" Text="SELECTED LAYER" Style="{StaticResource TuningLabelStyle}" />
+                <ComboBox x:Name="LayerComboBox"
+                          Margin="0,8,0,8"
+                          DisplayMemberPath="Id"
+                          SelectionChanged="LayerComboBox_SelectionChanged" />
+
+                <TextBlock x:Name="LayerRangeText" Text="RPM Range: -" Style="{StaticResource TuningValueStyle}" />
+                <TextBlock x:Name="LayerPitchText" Margin="0,8,0,0" Text="Pitch: -" Style="{StaticResource TuningValueStyle}" />
+                <TextBlock x:Name="LayerVolumeText" Margin="0,8,0,0" Text="Base Volume: -" Style="{StaticResource TuningValueStyle}" />
+
+                <TextBlock Margin="0,12,0,0" Text="Reference RPM" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerReferenceRpmSlider"
+                        Minimum="0"
+                        Maximum="10000"
+                        TickFrequency="100"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock Text="Minimum RPM" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerMinimumRpmSlider"
+                        Minimum="0"
+                        Maximum="10000"
+                        TickFrequency="100"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock Text="Peak RPM" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerPeakRpmSlider"
+                        Minimum="0"
+                        Maximum="10000"
+                        TickFrequency="100"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock Text="Maximum RPM" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerMaximumRpmSlider"
+                        Minimum="0"
+                        Maximum="10000"
+                        TickFrequency="100"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock Text="Minimum Pitch" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerMinimumPitchSlider"
+                        Minimum="0.2"
+                        Maximum="3"
+                        TickFrequency="0.05"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock Text="Maximum Pitch" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerMaximumPitchSlider"
+                        Minimum="0.2"
+                        Maximum="3"
+                        TickFrequency="0.05"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock Text="Base Volume" Style="{StaticResource TuningLabelStyle}" />
+                <Slider x:Name="LayerBaseVolumeSlider"
+                        Minimum="0"
+                        Maximum="1"
+                        TickFrequency="0.05"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged" />
+
+                <TextBlock x:Name="ValidationText"
+                           Margin="0,12,0,0"
+                           Foreground="#E8A55A"
+                           FontSize="12"
+                           TextWrapping="Wrap" />
+
+                <UniformGrid Columns="2" Margin="0,16,0,0">
+                    <Button Content="Reset Session Values"
+                            Margin="0,0,6,0"
+                            Height="34"
+                            Click="ResetButton_Click" />
+                    <Button Content="Export Audio JSON"
+                            Margin="6,0,0,0"
+                            Height="34"
+                            Click="ExportButton_Click" />
+                </UniformGrid>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

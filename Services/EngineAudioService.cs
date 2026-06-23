@@ -30,6 +30,12 @@ public sealed class EngineAudioService : IDisposable
     private WaveOutEvent? outputDevice;
     private double singleLoopPitchFactor = 1.0;
     private double singleLoopVolume = 0.0;
+    private bool lastIsMuted;
+    private double lastMasterVolume = 0.75;
+    private double lastCurrentRpm;
+    private double lastActualVehicleRpm;
+    private double lastAudioControlRpm;
+    private bool lastIsPreviewActive;
 
     public EngineAudioService()
         : this(Path.Combine(AppContext.BaseDirectory, "Assets", "Sounds"))
@@ -88,8 +94,35 @@ public sealed class EngineAudioService : IDisposable
         bool isEngineRunning,
         double currentRpm,
         int throttlePercent,
-        bool isMuted)
+        bool isMuted,
+        double masterVolume)
     {
+        UpdateEngineSound(
+            isEngineRunning,
+            currentRpm,
+            currentRpm,
+            throttlePercent,
+            isMuted,
+            masterVolume,
+            false);
+    }
+
+    public void UpdateEngineSound(
+        bool isEngineRunning,
+        double actualRpm,
+        double audioControlRpm,
+        int throttlePercent,
+        bool isMuted,
+        double masterVolume,
+        bool isPreviewActive = false)
+    {
+        lastIsMuted = isMuted;
+        lastMasterVolume = Math.Clamp(masterVolume, 0.0, 1.0);
+        lastCurrentRpm = audioControlRpm;
+        lastActualVehicleRpm = actualRpm;
+        lastAudioControlRpm = audioControlRpm;
+        lastIsPreviewActive = isPreviewActive;
+
         if (!IsAvailable || audioProfile is null || outputDevice is null)
         {
             return;
@@ -115,11 +148,11 @@ public sealed class EngineAudioService : IDisposable
 
             if (PlaybackMode == EngineAudioPlaybackMode.MultiLayerCrossfade)
             {
-                UpdateLayeredSound(currentRpm, throttlePercent);
+                UpdateLayeredSound(audioControlRpm, throttlePercent, lastMasterVolume);
                 return;
             }
 
-            UpdateSingleLoopSound(currentRpm, throttlePercent);
+            UpdateSingleLoopSound(audioControlRpm, throttlePercent, lastMasterVolume);
         }
         catch (Exception ex)
         {
@@ -148,6 +181,55 @@ public sealed class EngineAudioService : IDisposable
         }
 
         ActiveLayerSummary = string.Empty;
+    }
+
+    public EngineAudioDebugInfo GetDebugInfo()
+    {
+        return new EngineAudioDebugInfo
+        {
+            PlaybackMode = PlaybackMode.ToString(),
+            IsAudioAvailable = IsAvailable,
+            IsPlaying = IsPlaying,
+            IsMuted = lastIsMuted,
+            MasterVolume = lastMasterVolume,
+            CurrentRpm = lastCurrentRpm,
+            ActualVehicleRpm = lastActualVehicleRpm,
+            AudioControlRpm = lastAudioControlRpm,
+            IsPreviewActive = lastIsPreviewActive,
+            CurrentPitchFactor = singleLoopPitchFactor,
+            CurrentOutputVolume = PlaybackMode == EngineAudioPlaybackMode.MultiLayerCrossfade
+                ? Math.Clamp(activeLayers.Sum(layer => layer.CurrentVolume), 0.0, 1.0)
+                : singleLoopVolume,
+            Layers = activeLayers
+                .Select(layer => new EngineAudioLayerDebugInfo
+                {
+                    Id = layer.Profile.Id,
+                    IsAvailable = true,
+                    CurrentGain = layer.CurrentVolume,
+                    CurrentPitchFactor = layer.CurrentPitchFactor
+                })
+                .ToList()
+        };
+    }
+
+    public void ApplyTuningSettings(AudioTuningSession tuningSession)
+    {
+        if (audioProfile is null)
+        {
+            return;
+        }
+
+        audioProfile = tuningSession.BuildAudioProfile(audioProfile);
+
+        foreach (var activeLayer in activeLayers)
+        {
+            var tunedLayer = audioProfile.EngineAudioLayers
+                .FirstOrDefault(layer => string.Equals(layer.Id, activeLayer.Profile.Id, StringComparison.OrdinalIgnoreCase));
+            if (tunedLayer is not null)
+            {
+                activeLayer.Profile = tunedLayer;
+            }
+        }
     }
 
     public void Dispose()
@@ -274,7 +356,7 @@ public sealed class EngineAudioService : IDisposable
         }
     }
 
-    private void UpdateSingleLoopSound(double currentRpm, int throttlePercent)
+    private void UpdateSingleLoopSound(double currentRpm, int throttlePercent, double masterVolume)
     {
         if (audioProfile is null || singleLoopReader is null || singleLoopPitchProvider is null)
         {
@@ -290,15 +372,15 @@ public sealed class EngineAudioService : IDisposable
         singleLoopPitchFactor += (targetPitchFactor - singleLoopPitchFactor) * PitchSmoothingFactor;
         singleLoopPitchProvider.PitchFactor = (float)singleLoopPitchFactor;
 
-        var targetVolume = throttlePercent > 0
+        var targetVolume = (throttlePercent > 0
             ? audioProfile.EngineLoopThrottleVolume
-            : audioProfile.EngineLoopBaseVolume;
+            : audioProfile.EngineLoopBaseVolume) * masterVolume;
         singleLoopVolume += (targetVolume - singleLoopVolume) * VolumeSmoothingFactor;
         singleLoopReader.Volume = (float)Math.Clamp(singleLoopVolume, 0.0, 1.0);
         ActiveLayerSummary = string.Empty;
     }
 
-    private void UpdateLayeredSound(double currentRpm, int throttlePercent)
+    private void UpdateLayeredSound(double currentRpm, int throttlePercent, double masterVolume)
     {
         if (audioProfile is null || activeLayers.Count == 0)
         {
@@ -321,7 +403,8 @@ public sealed class EngineAudioService : IDisposable
             var targetVolume = normalizedGain
                 * layer.Profile.BaseVolume
                 * audioProfile.EngineLayersMasterVolume
-                * throttleVolumeFactor;
+                * throttleVolumeFactor
+                * masterVolume;
             layer.CurrentVolume += (targetVolume - layer.CurrentVolume) * VolumeSmoothingFactor;
             layer.VolumeProvider.Volume = (float)Math.Clamp(layer.CurrentVolume, 0.0, 1.0);
 
@@ -445,6 +528,11 @@ public sealed class EngineAudioService : IDisposable
         activeLayers.Clear();
         PlaybackMode = EngineAudioPlaybackMode.None;
         ActiveLayerSummary = string.Empty;
+        lastCurrentRpm = 0.0;
+        lastActualVehicleRpm = 0.0;
+        lastAudioControlRpm = 0.0;
+        lastIsPreviewActive = false;
+        singleLoopPitchFactor = 1.0;
     }
 
     private sealed class EngineAudioLayerRuntime : IDisposable
@@ -461,7 +549,7 @@ public sealed class EngineAudioService : IDisposable
             VolumeProvider = volumeProvider;
         }
 
-        public EngineAudioLayerProfile Profile { get; }
+        public EngineAudioLayerProfile Profile { get; set; }
 
         public AudioFileReader Reader { get; }
 
