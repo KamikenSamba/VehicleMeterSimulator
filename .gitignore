@@ -1,15 +1,28 @@
 bin/
 obj/
+TestResults/
+*.trx
+coverage/
+coverage.*
 
 .vs/
 *.user
 *.suo
+
+# Local settings and credentials
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
 
 # Local audio assets for prototype testing
 IncomingAudio/
 Assets/Sounds/**/*.wav
 Assets/Sounds/**/*.mp3
 Assets/Sounds/**/*.ogg
+Assets/Sounds/**/*.aup3
+Assets/Sounds/**/*-data/
 
 # Temporary audio tuning exports
 TuningExports/
